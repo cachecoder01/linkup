@@ -15,8 +15,8 @@
     
     <link rel="shortcut icon" href="assets/images/logo.jpeg">
     <link rel="stylesheet" href="assets/css/social-dashboard.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/fonts/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
 </head>
 <body>
@@ -32,6 +32,9 @@
     if ($result -> num_rows > 0) {
         while ($row = $result -> fetch_assoc()) {
             $profile = $row["profile"];
+            $username = $row["username"];
+            
+            $p_avater = substr($username, 0, 1);
         }
     }
 ?>
@@ -55,12 +58,22 @@
             </div>
             <div class="user-menu user">
                 <button class="icon-btn">
-                    <i class="fa fa-user"></i>
+                    <div class="current-avatar">
+                        <div class="default-avatar-placeholder" id="currentAvatar">
+                            <?php
+                            if (empty($p_img)) {
+                                echo '<p>'.strtoupper($p_avater).'</p>';
+                            }else {
+                                echo '<img src="assets/images/profile/'.$profile_img.'">';
+                            }
+                            ?>
+                        </div>
+                    </div>
                 </button>
                 <!--<img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">-->
                 <div class="user-dropdown" id="userDropdown">
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-user"></i> My Profile
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i> My Profile
                     </a>
                     <a href="logout.php" class="nav-item" onclick="return confirm('Are you sure you want to LogOut?')">
                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -72,6 +85,60 @@
 
     <!-- MAIN LAYOUT -->
     <div class="main-container">
+        <?php
+            if (empty($profile)) {
+                echo '<div class="first-profile-edit">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Edit Profile</h3>
+                                <button class="close-modal">&times;</button>
+                            </div>
+                            <form method="POST" action="" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <div class="profile-avatar-section">
+                                        <div class="current-avatar">
+                                            <div class="default-avatar-placeholder" id="currentAvatar">
+                                                <p>'.strtoupper($p_avater).'</p>
+                                            </div>
+                                        </div>
+                                        <div class="avatar-actions">
+                                            <button class="btn-secondary" id="changeAvatarBtn">
+                                                <i class="fas fa-camera"></i> Change Photo
+                                            </button>
+                                            <input type="file" name="profile_photo" id="avatarInput" accept="image/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" nam="username" class="form-input" placeholder="Enter username">
+                                        </div>
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="email" name"full_name" class="form-input" placeholder="Enter email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Profession</label>
+                                        <input type="text" name"profession" class="form-input" placeholder="Enter profession">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bio</label>
+                                        <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself..." rows="4"></textarea>
+                                    </div>
+                                        <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" name="location" class="form-input" placeholder="City, Country">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <input class="btn-secondary" type="reset" value="Cancel">
+                                    <button class="btn-primary" type="submit">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                ';
+            }
+        ?>
 
         <!-- LEFT SIDEBAR -->
         <aside class="sidebar">

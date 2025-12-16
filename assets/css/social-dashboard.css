@@ -70,6 +70,17 @@ body {
     justify-content: center;
     transition: background-color 0.2s ease;
 }
+.icon-btn .default-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+}
+.icon-btn .current-avatar {
+    margin: 0;
+}
+.icon-btn .default-avatar-placeholder p {    
+    font-size: 22px;
+    font-weight: 700;
+}
 .user .icon-btn {
     background-color: #eee;
 }
@@ -92,12 +103,10 @@ body {
     min-width: 18px;
     text-align: center;
 }
-
 .user-menu {
     position: relative;
     margin-left: 8px;
 }
-
 .user-avatar {
     width: 40px;
     height: 40px;
@@ -228,7 +237,7 @@ body {
     background: #1877f2;
     color: #ffffff;
     border: none;
-    border-radius: 8px;
+    border-radius: 30px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -250,6 +259,31 @@ body {
     padding: 20px;
     overflow-y: auto;
     height: calc(100vh - 56px);
+}
+/* FIRST PROFILE EDIT POPUP */
+.first-profile-edit {
+    width: 100%;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
+}
+.first-profile-edit .form-container {
+    background-color: white;
+    padding: 0;
+}
+.first-profile-edit h2 {    
+    font-size: 20px;
+    font-weight: 600;
+    color: #1c1e21;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #dadde1;
 }
 
 /* CREATE POST CARD */
@@ -315,7 +349,6 @@ body {
     opacity: 1;
     visibility: visible;
 }
-
 .modal-content {
     background: #ffffff;
     border-radius: 12px;
@@ -323,8 +356,8 @@ body {
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
+    margin: auto;
 }
-
 .modal-header {
     display: flex;
     align-items: center;
@@ -332,13 +365,11 @@ body {
     padding: 16px 20px;
     border-bottom: 1px solid #dadde1;
 }
-
 .modal-header h3 {
     font-size: 20px;
     font-weight: 600;
     color: #1c1e21;
 }
-
 .close-modal {
     background: none;
     border: none;
@@ -1061,7 +1092,6 @@ body {
 .form-group {
     margin-bottom: 20px;
 }
-
 .form-group label {
     display: block;
     font-size: 14px;
@@ -1069,7 +1099,6 @@ body {
     color: #1c1e21;
     margin-bottom: 8px;
 }
-
 .form-input, .form-textarea {
     width: 100%;
     padding: 12px 16px;
@@ -1080,12 +1109,10 @@ body {
     outline: none;
     transition: all 0.2s ease;
 }
-
 .form-input:focus, .form-textarea:focus {
     border-color: #1877f2;
     box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
 }
-
 .form-textarea {
     resize: vertical;
     min-height: 80px;
@@ -1095,7 +1122,6 @@ body {
 .profile-edit-form {
     padding: 20px 0;
 }
-
 .profile-avatar-section {
     display: flex;
     flex-direction: column;
@@ -1117,6 +1143,39 @@ body {
     border: 3px solid #e4e6ea;
 }
 
+/* default profile */
+.default-profile {
+    background-color: #1a8cd8;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;   
+    display: flex;
+    align-items: center;
+}
+.default-profile p {
+    text-align: center;    
+    margin: auto;
+    font-size: 45px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.default-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #1a8cd8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: 3px solid #e4e6ea;
+    font-size: 24px;
+}
+.default-avatar-placeholder p {
+    font-size: 42px;
+    font-weight: 700;
+}
 .avatar-actions {
     display: flex;
     gap: 10px;

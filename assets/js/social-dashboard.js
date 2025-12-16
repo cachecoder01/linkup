@@ -661,11 +661,21 @@ function initializeProfileModals() {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = (event) => {
                     const currentAvatar = document.getElementById('currentAvatar');
-                    if (currentAvatar) {
-                        currentAvatar.src = e.target.result;
+
+                    // Check if there's already an img element, if not create one
+                    let imgElement = currentAvatar.querySelector('img');
+                    if (!imgElement) {
+                        // Remove the placeholder and create img element
+                        currentAvatar.innerHTML = '';
+                        imgElement = document.createElement('img');
+                        imgElement.alt = 'Profile avatar';
+                        currentAvatar.appendChild(imgElement);
                     }
+
+                    // Set the image source
+                    imgElement.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -785,8 +795,25 @@ function saveProfileChanges() {
 document.addEventListener('DOMContentLoaded', function() {
     initializeProfileModals();
     loadUserProfileData();
-    console.log('Profile modals initialized'); // Debug log
+    initializeFirstProfileEdit();
 });
+
+// Initialize first profile edit modal
+function initializeFirstProfileEdit() {
+    const firstProfileEdit = document.querySelector('.first-profile-edit');
+    const closeButton = document.querySelector('.first-profile-edit .close-modal');
+
+    console.log('Initializing first profile edit:', { firstProfileEdit, closeButton });
+
+    if (closeButton && firstProfileEdit) {
+        closeButton.addEventListener('click', function() {
+            console.log('Close button clicked, hiding first profile edit');
+            firstProfileEdit.style.display = 'none';
+        });
+    } else {
+        console.log('First profile edit elements not found');
+    }
+}
 
 // Utility function for debouncing
 function debounce(func, wait) {
