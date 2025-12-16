@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkUp | Social Media Platform</title>
+    <link rel="stylesheet" href="assets/css/social-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-left">
+        <img src="assets/images/logo.jpeg" alt="LinkUp Logo" class="header-logo">
+        <h1 class="brand-name">LinkUp</h1>
+    </div>
+
+    <div class="header-center">
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" placeholder="Search people, posts..." class="search-input">
+        </div>
+    </div>
+
+    <div class="header-right">
+        <div class="header-icons">
+            <button class="icon-btn" title="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="icon-btn" title="Messages">
+                <i class="fas fa-envelope"></i>
+                <span class="notification-badge">2</span>
+            </button>
+            <button class="icon-btn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+        <div class="user-menu">
+            <img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">
+            <div class="user-dropdown" id="userDropdown">
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-user"></i> My Profile
+                </a>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" class="dropdown-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<div class="main-container">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="feed">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-section="explore">
+                <i class="fas fa-compass"></i>
+                <span>Explore</span>
+            </a>
+            <a href="#" class="nav-item" data-section="messages">
+                <i class="fas fa-envelope"></i>
+                <span>Messages</span>
+            </a>
+            <a href="#" class="nav-item" data-section="notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+            </a>
+            <a href="#" class="nav-item" data-section="profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="#" class="nav-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="create-post-btn">
+                <i class="fas fa-plus"></i>
+                <span>Create Post</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN FEED -->
+    <main class="main-feed">
+
+        <!-- CREATE POST CARD -->
+        <div class="create-post-card">
+            <div class="create-post-header">
+                <img src="assets/images/default-avatar.png" alt="Your avatar" class="post-avatar">
+                <div class="create-post-input" id="createPostBtn">
+                    <span class="placeholder-text">What's on your mind?</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CREATE POST MODAL -->
+        <div class="modal-overlay" id="postModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Create Post</h3>
+                    <button class="close-modal" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="post-author">
+                        <img src="assets/images/default-avatar.png" alt="Your avatar" class="post-avatar">
+                        <div class="author-info">
+                            <span class="author-name" id="modalUserName">Your Name</span>
+                            <span class="post-privacy">
+                                <i class="fas fa-globe"></i> Public
+                            </span>
+                        </div>
+                    </div>
+                    <textarea
+                        placeholder="What's on your mind?"
+                        class="post-textarea"
+                        id="postContent"></textarea>
+                    <div class="post-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-image"></i> Photo
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-video"></i> Video
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-smile"></i> Feeling
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancelPost">Cancel</button>
+                    <button class="btn-primary" id="submitPost">Post</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEED FILTERS -->
+        <div class="feed-filters">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-fire"></i> Trending
+            </button>
+            <button class="filter-btn" data-filter="following">
+                <i class="fas fa-users"></i> Following
+            </button>
+            <button class="filter-btn" data-filter="latest">
+                <i class="fas fa-clock"></i> Latest
+            </button>
+        </div>
+
+        <!-- POSTS CONTAINER -->
+        <div class="posts-container" id="postsContainer">
+            <!-- Posts will be loaded here dynamically -->
+        </div>
+
+        <!-- LOADING INDICATOR -->
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <span>Loading more posts...</span>
+        </div>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-sidebar">
+
+        <!-- USER PROFILE CARD -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <img src="assets/images/default-avatar.png" alt="Profile" class="profile-avatar">
+                <div class="profile-info">
+                    <h4 class="profile-name" id="profileName">Your Name</h4>
+                    <p class="profile-username" id="profileUsername">@username</p>
+                </div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat">
+                    <span class="stat-number" id="postsCount">0</span>
+                    <span class="stat-label">Posts</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="followersCount">0</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="followingCount">0</span>
+                    <span class="stat-label">Following</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn-outline">Edit Profile</button>
+            </div>
+        </div>
+
+        <!-- FRIENDS LIST -->
+        <div class="friends-card">
+            <div class="card-header">
+                <h4>Friends</h4>
+                <a href="#" class="see-all">See all</a>
+            </div>
+            <div class="friends-list" id="friendsList">
+                <!-- Friends will be loaded here -->
+            </div>
+        </div>
+
+        <!-- SUGGESTIONS -->
+        <div class="suggestions-card">
+            <div class="card-header">
+                <h4>People you may know</h4>
+            </div>
+            <div class="suggestions-list" id="suggestionsList">
+                <!-- Suggestions will be loaded here -->
+            </div>
+        </div>
+
+        <!-- TRENDING TOPICS -->
+        <div class="trending-card">
+            <div class="card-header">
+                <h4>Trending</h4>
+            </div>
+            <div class="trending-list">
+                <div class="trending-item">
+                    <span class="trend-hashtag">#SocialMedia</span>
+                    <span class="trend-count">2.1K posts</span>
+                </div>
+                <div class="trending-item">
+                    <span class="trend-hashtag">#Technology</span>
+                    <span class="trend-count">1.8K posts</span>
+                </div>
+                <div class="trending-item">
+                    <span class="trend-hashtag">#Programming</span>
+                    <span class="trend-count">1.2K posts</span>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+</div>
+
+<script src="assets/js/social-dashboard.js"></script>
+</body>
+</html>
