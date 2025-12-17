@@ -27,8 +27,7 @@ function setupEventListeners() {
     const createPostBtn = document.getElementById('createPostBtn');
     const postModal = document.getElementById('postModal');
     const closeModal = document.getElementById('closeModal');
-    const cancelPost = document.getElementById('cancelPost');
-    const submitPost = document.getElementById('submitPost');
+    const cancelPost = document.querySelector('.btn-secondary[onclick="closePostModal()"]');
     const createPostSidebarBtn = document.querySelector('.create-post-btn');
 
     // Open modal
@@ -47,11 +46,6 @@ function setupEventListeners() {
         cancelPost.addEventListener('click', () => closePostModal());
     }
 
-    // Submit post
-    if (submitPost) {
-        submitPost.addEventListener('click', () => submitNewPost());
-    }
-
     // Close modal when clicking overlay
     if (postModal) {
         postModal.addEventListener('click', (e) => {
@@ -60,6 +54,9 @@ function setupEventListeners() {
             }
         });
     }
+
+    // Setup post creation features
+    setupPostCreationFeatures();
 
     // Feed filters
     const filterBtns = document.querySelectorAll('.filter-btn');
@@ -130,67 +127,140 @@ function setupEventListeners() {
 
 function openPostModal() {
     const modal = document.getElementById('postModal');
-    const textarea = document.getElementById('postContent');
+    const textarea = document.querySelector('.post-textarea');
 
     if (modal && textarea) {
         modal.classList.add('active');
         textarea.focus();
+
+        // Reset form and show placeholder
+        resetPostForm();
         loadUserDataForModal();
     }
 }
 
 function closePostModal() {
     const modal = document.getElementById('postModal');
-    const textarea = document.getElementById('postContent');
 
-    if (modal && textarea) {
+    if (modal) {
         modal.classList.remove('active');
-        textarea.value = '';
+        // Reset form after a short delay to allow modal animation to complete
+        setTimeout(() => {
+            resetPostForm();
+        }, 300);
     }
 }
 
-function submitNewPost() {
-    const content = document.getElementById('postContent').value.trim();
+function resetPostForm() {
+    const textarea = document.querySelector('.post-textarea');
+    const charCount = document.querySelector('.char-count');
+    const imageUpload = document.getElementById('imageUpload');
 
-    if (!content) {
-        alert('Please write something before posting!');
-        return;
+    // Reset textarea
+    if (textarea) {
+        textarea.value = '';
     }
 
-    // Show loading state
-    const submitBtn = document.getElementById('submitPost');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Posting...';
-    submitBtn.disabled = true;
+    // Reset character counter
+    if (charCount) {
+        charCount.textContent = '0';
+        charCount.style.color = '#65676b';
+    }
 
-    // Send post to server
-    fetch('api/create_post.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            content: content
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            closePostModal();
-            loadPosts('all'); // Reload posts
-            loadUserData(); // Update user stats
-        } else {
-            alert('Error creating post: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error creating post. Please try again.');
-    })
-    .finally(() => {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+    // Reset image upload
+    if (imageUpload) {
+        imageUpload.value = '';
+    }
+
+    // Show image placeholder
+    showImagePlaceholder();
+
+    // Reset checkboxes
+    const checkboxes = document.querySelectorAll('.option-checkbox input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
     });
+}
+
+// Setup post creation features (character counter, image preview, etc.)
+function setupPostCreationFeatures() {
+    // Character counter
+    const postTextarea = document.querySelector('.post-textarea');
+    const charCount = document.querySelector('.char-count');
+
+    if (postTextarea && charCount) {
+        postTextarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+            charCount.style.color = count > 450 ? '#e74c3c' : '#65676b';
+        });
+    }
+
+    // Image upload and preview
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+    if (imageUpload && imagePreviewContainer) {
+        imageUpload.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                displayImagePreviews(files);
+            }
+        });
+    }
+}
+
+function displayImagePreviews(files) {
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+    // Clear existing previews
+    imagePreviewContainer.innerHTML = '';
+
+    // Create grid container
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'image-preview-grid';
+
+    files.forEach((file, index) => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = `Preview ${index + 1}`;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-image';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = function() {
+                    previewItem.remove();
+                    // If no images left, show placeholder
+                    if (gridContainer.children.length === 1) {
+                        showImagePlaceholder();
+                    }
+                };
+
+                previewItem.appendChild(img);
+                previewItem.appendChild(removeBtn);
+                gridContainer.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    imagePreviewContainer.appendChild(gridContainer);
+}
+
+function showImagePlaceholder() {
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    imagePreviewContainer.innerHTML = `
+        <div class="image-preview-placeholder">
+            <i class="fas fa-images"></i>
+            <span>Add photos to your post</span>
+        </div>
+    `;
 }
 
 function loadUserData() {
@@ -812,6 +882,39 @@ function initializeFirstProfileEdit() {
         });
     } else {
         console.log('First profile edit elements not found');
+    }
+}
+
+// Additional post creation functions
+function addEmoji() {
+    const textarea = document.querySelector('.post-textarea');
+    if (textarea) {
+        // Simple emoji picker - you can enhance this
+        const emojis = ['😀', '❤️', '👍', '🎉', '🔥', '😢', '😍', '😂'];
+        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        textarea.value += randomEmoji;
+        textarea.focus();
+
+        // Update character counter
+        const charCount = document.querySelector('.char-count');
+        if (charCount) {
+            charCount.textContent = textarea.value.length;
+        }
+    }
+}
+
+function addLocation() {
+    // For now, just add a placeholder text
+    const textarea = document.querySelector('.post-textarea');
+    if (textarea) {
+        textarea.value += ' 📍 ';
+        textarea.focus();
+
+        // Update character counter
+        const charCount = document.querySelector('.char-count');
+        if (charCount) {
+            charCount.textContent = textarea.value.length;
+        }
     }
 }
 

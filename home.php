@@ -70,7 +70,6 @@
                         </div>
                     </div>
                 </button>
-                <!--<img src="assets/images/default-avatar.png" alt="Profile" class="user-avatar" id="userAvatar">-->
                 <div class="user-dropdown" id="userDropdown">
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-user"></i> My Profile
@@ -87,7 +86,7 @@
     <div class="main-container">
         <?php
             if (empty($profile)) {
-                echo '<div class="first-profile-edit">
+                /*echo '<div class="first-profile-edit">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3>Edit Profile</h3>
@@ -97,7 +96,7 @@
                                 <div class="modal-body">
                                     <div class="profile-avatar-section">
                                         <div class="current-avatar">
-                                            <div class="default-avatar-placeholder" id="currentAvatar">
+                                                <div class="default-avatar-placeholder" id="currentAvatar">
                                                 <p>'.strtoupper($p_avater).'</p>
                                             </div>
                                         </div>
@@ -136,18 +135,18 @@
                             </form>
                         </div>
                     </div>
-                ';
+                ';*/
             }
         ?>
 
         <!-- LEFT SIDEBAR -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-section="feed">
+                <a class="nav-item active tablink" onclick="openPage('Home', this, 'purple')" id="defaultOpen">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
-                </a>                
-                <a href="#" class="nav-item" data-section="profile">
+                </a>
+                <a href="#" class="nav-item tablink" onclick="openPage('Home', this, 'purple')" data-section="profile">
                     <i class="fas fa-users"></i>
                     <span>Followers</span>
                 </a>
@@ -169,57 +168,76 @@
             </div>
         </aside>
 
-    <!-- MAIN FEED -->
-    <main class="main-feed">
+        <!-- MAIN FEED -->
+        <main class="main-feed">
 
-        <!-- CREATE POST CARD -->
-        <div class="create-post-card">
-            <div class="create-post-header">
-                <i class="fa fa-user"></i>
-                <img src="assets/images/default-avatar.png" alt="Your avatar" class="post-avatar">
-                <div class="create-post-input" id="createPostBtn">
-                    <span class="placeholder-text">What's on your mind?</span>
+            <!-- CREATE POST CARD -->
+            <div class="create-post-card">
+                <div class="create-post-header">
+                    <div class="current-avatar">
+                        <div class="default-avatar-placeholder" id="currentAvatar">
+                            <?php
+                            if (empty($p_img)) {
+                                echo '<p>'.strtoupper($p_avater).'</p>';
+                            }else {
+                                echo '<img src="assets/images/profile/'.$profile_img.'">';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div class="create-post-input" id="createPostBtn">
+                        <span class="placeholder-text">What's on your mind?</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
         <!-- CREATE POST MODAL -->
         <div class="modal-overlay" id="postModal">
-            <div class="modal-content">
+            <div class="modal-content modal-post">
                 <div class="modal-header">
                     <h3>Create Post</h3>
                     <button class="close-modal" id="closeModal">&times;</button>
                 </div>
-                <div class="modal-body">
-                    <div class="post-author">
-                        <img src="assets/images/default-avatar.png" alt="Your avatar" class="post-avatar">
-                        <div class="author-info">
-                            <span class="author-name" id="modalUserName">Your Name</span>
-                            <span class="post-privacy">
-                                <i class="fas fa-globe"></i> Public
-                            </span>
+                <form action="create_post.php" method="POST" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="post-content-section">
+                            <textarea
+                                name="post_content"
+                                placeholder="What's on your mind?"
+                                class="post-textarea"
+                                maxlength="500">
+                            </textarea>
+                            <!-- Character Counter -->
+                            <div class="char-counter">
+                                <span class="char-count">0</span>/500
+                            </div>
+                        </div>
+                        <!-- Image Preview Area -->
+                        <div class="image-preview-container" id="imagePreviewContainer">
+                            <div class="image-preview-placeholder">
+                                <i class="fas fa-images"></i>
+                                <span>Add photos to your post</span>
+                            </div>
+                        </div>
+
+                        <!-- Post Actions -->
+                        <div class="post-actions">
+                            <div class="action-buttons">
+                                <label for="imageUpload" class="action-btn">
+                                    <i class="fas fa-image"></i> Photo
+                                </label>
+                                <input type="file" id="imageUpload" name="post_images[]" multiple accept="image/*" style="display: none;">
+                            </div>
                         </div>
                     </div>
-                    <textarea
-                        placeholder="What's on your mind?"
-                        class="post-textarea"
-                        id="postContent"></textarea>
-                    <div class="post-actions">
-                        <button class="action-btn">
-                            <i class="fas fa-image"></i> Photo
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-video"></i> Video
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-smile"></i> Feeling
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closePostModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" id="submitPost">
+                            <i class="fas fa-paper-plane"></i> Post
                         </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" id="cancelPost">Cancel</button>
-                    <button class="btn-primary" id="submitPost">Post</button>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -444,7 +462,25 @@
 
 </div>
 
-<script src="assets/js/social-dashboard.js"></script>
+    <script src="assets/js/social-dashboard.js"></script>
+    <script>
+		function openPage(pageName,elmnt,color) {
+			var i, tabcontent, tablinks;
+		    tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+		        tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablink");
+			for (i = 0; i < tablinks.length; i++) {
+			    tablinks[i].style.backgroundColor = "";
+			  }
+			  document.getElementById(pageName).style.display = "block";
+			  elmnt.style.backgroundColor = color;
+		}
+			
+		// Get the element with id="defaultOpen" and click on it
+		document.getElementById("defaultOpen").click();
+	</script>
 
 </body>
 </html>
