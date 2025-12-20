@@ -236,7 +236,6 @@ body {
   color: white;
   display: none;
   justify-content: center;
-  margin-top: 200px;
 }
 
 .create-post-btn {
@@ -670,20 +669,21 @@ body {
     border: 1px solid #dadde1;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
 .profile-header {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 16px;
 }
-
-.profile-avatar {
+.profile-header .default-avatar-placeholder {
     width: 60px;
     height: 60px;
     border-radius: 50%;
 }
-
+ .profile-header .default-avatar-placeholder p {       
+    font-size: 32px;
+    font-weight: 700;
+ }
 .profile-info h4 {
     font-size: 18px;
     font-weight: 600;
@@ -754,7 +754,6 @@ body {
 }
 
 .card-header {
-    display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
@@ -764,6 +763,9 @@ body {
     font-size: 16px;
     font-weight: 600;
     color: #1c1e21;
+}
+.card-header p {
+    color: #65676b;
 }
 
 .see-all {
@@ -1302,21 +1304,18 @@ body {
 .profile-details {
     padding: 20px 0;
 }
-
 .profile-header-section {
     position: relative;
     margin-bottom: 30px;
 }
-
 .profile-cover {
     height: 200px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #eee;
     border-radius: 8px;
     position: relative;
     overflow: hidden;
     margin-bottom: 20px;
 }
-
 .cover-placeholder {
     position: absolute;
     top: 50%;
@@ -1327,30 +1326,11 @@ body {
     font-size: 16px;
 }
 
-.cover-placeholder i {
-    display: block;
-    font-size: 32px;
-    margin-bottom: 8px;
-}
-
 .profile-info-section {
     display: flex;
     gap: 20px;
     align-items: flex-start;
 }
-
-.profile-avatar-large {
-    flex-shrink: 0;
-}
-
-.profile-avatar-large img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
 .profile-details-info {
     flex: 1;
 }

@@ -1,44 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LinkUp | Sign Up</title>
+
+    <link rel="shortcut icon" href="assets/images/logo.jpeg">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body class="landing">
+    
 <?php
+session_start();
+$email = $_SESSION['email'];
+
+if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== TRUE) {
+    header('location: index.html');
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include 'config/db_connect.php';
 
-    $full_name = trim($_POST["name"]);
-    $full_name = htmlspecialchars(strip_tags($full_name), ENT_QUOTES, 'UTF-8');
+    $full_name = strip_tags(trim($_POST["name"]));
 
-    $bio = trim($_post["bio"]);
-    $bio = filter_var($bio, FILTER_VALIDATE_EMAIL);
+    $bio = strip_tags(trim($_POST["bio"]));
 
-    $proff = trim($_POST["proffession"]);
-    $proff = htmlspecialchars(strip_tags($proff), ENT_QUOTES, 'UTF-8');
+    $prof = strip_tags(trim($_POST["profession"]));
 
-    $location = trim($_POST["location"]);
-    $location = htmlspecialchars(strip_tags($location), ENT_QUOTES, 'UTF-8');
+    $location = strip_tags(trim($_POST["location"]));
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt ->bind_param("s", $email);
-    $stmt ->execute();
-
-    $result = $stmt -> get_result();
-    if ($result -> num_rows > 0) {
-        echo 'email already registered';
-        echo '<a href="login.html">Login instead</a>';
-    }else {
-        if ($pass == $pass_confirm) {
-            $pass = password_hash($pass, PASSWORD_DEFAULT);
+    $img = "";
+    if (isset($_FILES["img"]["name"]) && $_FILES["img"]["error"] == 0) {
+        $img = $_FILES["img"];
+    }
     
-            $stmt = $conn->prepare("INSERT INTO users(username, email, password)VALUE(?, ?, ?)");
-            $stmt ->bind_param("sss", $username, $email, $pass);
-            $stmt ->execute();
-            if ($stmt) {
-                echo 'Registed successfully';
+    if (isset($_FILES["img"]["name"]) && $_FILES["img"]["error"] == 0) {
+
+        $targetDir = 'assets/images/profiles/';
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, TRUE);
+        }
+
+        $imgName = time() ."_". basename((string)$_FILES["img"]["name"]);
+
+        $targetFile = $targetDir . $imgName;
+
+        $check = getimagesize($_FILES["img"]["tmp_name"]);
+        $allowedType = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp', 'image/svg', 'image/jfif'];
+        if (!in_array($check['mime'], $allowedType)) {
+            die('File Format Not Allowed');
+            exit();
+        }
+
+        if ($check) {
+            if (move_uploaded_file($_FILES["img"]["tmp_name"], $targetFile)) {
+                $img = $imgName;
             }else {
-                echo 'Unable to register';
+                die('unable to upload image:' . $_FILES["img"]["error"]);
+                exit();
             }
-        }else {
-            echo 'password do not match';
+        }elseif($_FILES["img"]["error"] !== 4) {
+            die('unable to upload: ' . $_FILES["img"]["error"]);
+            exit();
         }
     }
+
+    $profile = 1;
+
+    $stmt = $conn->prepare("UPDATE users SET profile=?, full_name=?, profile_img=?, bio=?, profession=?, location=? WHERE email=?");
+    $stmt ->bind_param("issssss", $profile, $full_name, $img, $bio, $prof, $location, $email);
+    $stmt ->execute();
+
+    if ($stmt) {
+        echo '<div class="form-container">
+                <p>Profile Saved</p>
+                <a href="home.php" class="btn primary">Ok</a>
+            </div>
+        ';
+    }else {
+        echo '<div class="form-container">
+                <p>Unable To Saved Profile</p>
+                <a href="home.php" class="btn primary">Try Again</a>
+            </div>
+        ';
+    }
+
 }else {
     die("INVALID REQUEST");
 }    
 ?>
+</body>
+</html>

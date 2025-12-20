@@ -33,7 +33,13 @@
         while ($row = $result -> fetch_assoc()) {
             $profile = $row["profile"];
             $username = $row["username"];
-            
+            $profile_img = $row["profile_img"];
+            $name =  $row["full_name"];
+            $bio = $row["bio"];
+            $prof = $row["proffession"];
+            $location = $row["location"];
+            $datejoined = $row["date"];
+
             $p_avater = substr($username, 0, 1);
         }
     }
@@ -59,13 +65,13 @@
             <div class="user-menu user">
                 <button class="icon-btn">
                     <div class="current-avatar">
-                        <div class="default-avatar-placeholder" id="currentAvatar">
+                        <div class="default-avatar-placeholder">
                             <?php
-                            if (empty($p_img)) {
-                                echo '<p>'.strtoupper($p_avater).'</p>';
-                            }else {
-                                echo '<img src="assets/images/profile/'.$profile_img.'">';
-                            }
+                                if (empty($p_img)) {
+                                    echo '<p>'.strtoupper($p_avater).'</p>';
+                                }else {
+                                    echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                }
                             ?>
                         </div>
                     </div>
@@ -86,13 +92,13 @@
     <div class="main-container">
         <?php
             if (empty($profile)) {
-                /*echo '<div class="first-profile-edit">
+                echo '<div class="first-profile-edit">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h3>Edit Profile</h3>
+                                <h3>Create Profile</h3>
                                 <button class="close-modal">&times;</button>
                             </div>
-                            <form method="POST" action="" enctype="multipart/form-data">
+                            <form method="POST" action="profile.php" enctype="multipart/form-data">
                                 <div class="modal-body">
                                     <div class="profile-avatar-section">
                                         <div class="current-avatar">
@@ -102,51 +108,47 @@
                                         </div>
                                         <div class="avatar-actions">
                                             <button class="btn-secondary" id="changeAvatarBtn">
-                                                <i class="fas fa-camera"></i> Change Photo
+                                                <i class="fas fa-camera"></i> Add Photo
                                             </button>
-                                            <input type="file" name="profile_photo" id="avatarInput" accept="image/*" style="display: none;">
+                                            <input type="file" name="img" id="avatarInput" accept="image/*" style="display: none;">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Username</label>
-                                        <input type="text" nam="username" class="form-input" placeholder="Enter username">
-                                        </div>
-                                    <div class="form-group">
                                         <label>Full Name</label>
-                                        <input type="email" name"full_name" class="form-input" placeholder="Enter email">
+                                        <input type="text" name="name" class="form-input" placeholder="Enter Full Name" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Profession</label>
-                                        <input type="text" name"profession" class="form-input" placeholder="Enter profession">
+                                        <input type="text" name="profession" class="form-input" placeholder="Enter profession" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Bio</label>
-                                        <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself..." rows="4"></textarea>
+                                        <textarea name="bio" class="form-textarea" placeholder="Tell us about yourself..." rows="4" required></textarea>
                                     </div>
-                                        <div class="form-group">
+                                    <div class="form-group">
                                         <label>Location</label>
-                                        <input type="text" name="location" class="form-input" placeholder="City, Country">
+                                        <input type="text" name="location" class="form-input" placeholder="City, Country" required>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <input class="btn-secondary" type="reset" value="Cancel">
-                                    <button class="btn-primary" type="submit">Save Changes</button>
+                                    <button class="btn-primary" type="submit">Save</button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                ';*/
+                ';
             }
         ?>
 
         <!-- LEFT SIDEBAR -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a class="nav-item active tablink" onclick="openPage('Home', this, 'purple')" id="defaultOpen">
+                <a class="nav-item tablink" onclick="openPage('Home', this, '#e7f3ff', '#1877f2')" id="defaultOpen">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="nav-item tablink" onclick="openPage('Home', this, 'purple')" data-section="profile">
+                <a href="#" class="nav-item tablink" onclick="openPage('Followers', this, '#e7f3ff', '#1877f2')" data-section="profile">
                     <i class="fas fa-users"></i>
                     <span>Followers</span>
                 </a>
@@ -169,219 +171,240 @@
         </aside>
 
         <!-- MAIN FEED -->
-        <main class="main-feed">
+        <main class="main-feed">     
 
-            <!-- CREATE POST CARD -->
-            <div class="create-post-card">
-                <div class="create-post-header">
-                    <div class="current-avatar">
-                        <div class="default-avatar-placeholder" id="currentAvatar">
-                            <?php
-                            if (empty($p_img)) {
-                                echo '<p>'.strtoupper($p_avater).'</p>';
-                            }else {
-                                echo '<img src="assets/images/profile/'.$profile_img.'">';
-                            }
-                            ?>
+            <!-- CREATE POST MODAL -->
+            <div class="modal-overlay" id="postModal">
+                <div class="modal-content modal-post">
+                    <div class="modal-header">
+                        <h3>Create Post</h3>
+                        <button class="close-modal" id="closeModal">&times;</button>
+                    </div>
+                    <form action="create_post.php" method="POST" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <div class="post-content-section">
+                                <textarea
+                                    name="post_content"
+                                    placeholder="What's on your mind?"
+                                    class="post-textarea"
+                                    maxlength="500">
+                                </textarea>
+                                <!-- Character Counter -->
+                                <div class="char-counter">
+                                    <span class="char-count">0</span>/500
+                                </div>
+                            </div>
+                            <!-- Image Preview Area -->
+                            <div class="image-preview-container" id="imagePreviewContainer">
+                                <div class="image-preview-placeholder">
+                                    <i class="fas fa-images"></i>
+                                    <span>Add photos to your post</span>
+                                </div>
+                            </div>
+
+                            <!-- Post Actions -->
+                            <div class="post-actions">
+                                <div class="action-buttons">
+                                    <label for="imageUpload" class="action-btn">
+                                        <i class="fas fa-image"></i> Photo
+                                    </label>
+                                    <input type="file" id="imageUpload" name="post_images[]" multiple accept="image/*" style="display: none;">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="create-post-input" id="createPostBtn">
-                        <span class="placeholder-text">What's on your mind?</span>
-                    </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary" onclick="closePostModal()">Cancel</button>
+                            <button type="submit" class="btn-primary" id="submitPost">
+                                <i class="fas fa-paper-plane"></i> Post
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-        <!-- CREATE POST MODAL -->
-        <div class="modal-overlay" id="postModal">
-            <div class="modal-content modal-post">
-                <div class="modal-header">
-                    <h3>Create Post</h3>
-                    <button class="close-modal" id="closeModal">&times;</button>
-                </div>
-                <form action="create_post.php" method="POST" enctype="multipart/form-data">
+            <!-- EDIT PROFILE MODAL -->
+            <div class="modal-overlay" id="editProfileModal">
+                <div class="modal-content modal-lg">
+                    <div class="modal-header">
+                        <h3>Edit Profile</h3>
+                        <button class="close-modal" id="closeEditProfileModal">&times;</button>
+                    </div>
                     <div class="modal-body">
-                        <div class="post-content-section">
-                            <textarea
-                                name="post_content"
-                                placeholder="What's on your mind?"
-                                class="post-textarea"
-                                maxlength="500">
-                            </textarea>
-                            <!-- Character Counter -->
-                            <div class="char-counter">
-                                <span class="char-count">0</span>/500
+                        <div class="profile-edit-form">
+                            <div class="profile-avatar-section">
+                                <div class="current-avatar">
+                                    <img src="assets/images/default-avatar.png" alt="Current avatar" id="currentAvatar">
+                                </div>
+                                <div class="avatar-actions">
+                                    <button class="btn-secondary" id="changeAvatarBtn">
+                                        <i class="fas fa-camera"></i> Change Photo
+                                    </button>
+                                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                                </div>
                             </div>
-                        </div>
-                        <!-- Image Preview Area -->
-                        <div class="image-preview-container" id="imagePreviewContainer">
-                            <div class="image-preview-placeholder">
-                                <i class="fas fa-images"></i>
-                                <span>Add photos to your post</span>
+                            <div class="form-group">
+                                <label for="editUsername">Username</label>
+                                <input type="text" id="editUsername" class="form-input" placeholder="Enter username">
                             </div>
-                        </div>
-
-                        <!-- Post Actions -->
-                        <div class="post-actions">
-                            <div class="action-buttons">
-                                <label for="imageUpload" class="action-btn">
-                                    <i class="fas fa-image"></i> Photo
-                                </label>
-                                <input type="file" id="imageUpload" name="post_images[]" multiple accept="image/*" style="display: none;">
+                            <div class="form-group">
+                                <label for="editEmail">Full Name</label>
+                                <input type="text" name="name" class="form-input" placeholder="Enter Full Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Profession</label>
+                                <input type="text" name="profession" class="form-input" placeholder="Enter Profession">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBio">Bio</label>
+                                <textarea id="editBio" class="form-textarea" placeholder="Tell us about yourself..." rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editLocation">Location</label>
+                                <input type="text" id="editLocation" class="form-input" placeholder="City, Country">
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer">
-                        <button type="button" class="btn-secondary" onclick="closePostModal()">Cancel</button>
-                        <button type="submit" class="btn-primary" id="submitPost">
-                            <i class="fas fa-paper-plane"></i> Post
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- EDIT PROFILE MODAL -->
-        <div class="modal-overlay" id="editProfileModal">
-            <div class="modal-content modal-lg">
-                <div class="modal-header">
-                    <h3>Edit Profile</h3>
-                    <button class="close-modal" id="closeEditProfileModal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="profile-edit-form">
-                        <div class="profile-avatar-section">
-                            <div class="current-avatar">
-                                <img src="assets/images/default-avatar.png" alt="Current avatar" id="currentAvatar">
-                            </div>
-                            <div class="avatar-actions">
-                                <button class="btn-secondary" id="changeAvatarBtn">
-                                    <i class="fas fa-camera"></i> Change Photo
-                                </button>
-                                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="editUsername">Username</label>
-                            <input type="text" id="editUsername" class="form-input" placeholder="Enter username">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="editEmail">Email</label>
-                            <input type="email" id="editEmail" class="form-input" placeholder="Enter email">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="editBio">Bio</label>
-                            <textarea id="editBio" class="form-textarea" placeholder="Tell us about yourself..." rows="4"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="editLocation">Location</label>
-                            <input type="text" id="editLocation" class="form-input" placeholder="City, Country">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="editWebsite">Website</label>
-                            <input type="url" id="editWebsite" class="form-input" placeholder="https://yourwebsite.com">
-                        </div>
+                        <button class="btn-secondary" id="cancelEditProfile">Cancel</button>
+                        <button class="btn-primary" id="saveProfile">Save Changes</button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" id="cancelEditProfile">Cancel</button>
-                    <button class="btn-primary" id="saveProfile">Save Changes</button>
-                </div>
             </div>
-        </div>
 
-        <!-- VIEW PROFILE MODAL -->
-        <div class="modal-overlay" id="viewProfileModal">
-            <div class="modal-content modal-lg">
-                <div class="modal-header">
-                    <h3>My Profile</h3>
-                    <button class="close-modal" id="closeViewProfileModal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="profile-details">
-                        <div class="profile-header-section">
-                            <div class="profile-cover">
-                                <div class="cover-placeholder">
-                                    <i class="fas fa-camera"></i>
-                                    <span>Add Cover Photo</span>
-                                </div>
-                            </div>
-                            <div class="profile-info-section">
-                                <div class="profile-avatar-large">
-                                    <img src="assets/images/default-avatar.png" alt="Profile" id="profileAvatarLarge">
-                                </div>
-                                <div class="profile-details-info">
-                                    <h2 id="profileFullName">Your Name</h2>
-                                    <p class="profile-username-display" id="profileUsernameDisplay">@username</p>
-                                    <p class="profile-bio" id="profileBio">This user hasn't added a bio yet.</p>
-                                    <div class="profile-meta">
-                                        <span class="meta-item" id="profileLocation">
-                                            <i class="fas fa-map-marker-alt"></i> Location not set
-                                        </span>
-                                        <span class="meta-item" id="profileWebsite">
-                                            <i class="fas fa-link"></i> Website not set
-                                        </span>
-                                        <span class="meta-item" id="profileJoined">
-                                            <i class="fas fa-calendar-alt"></i> Joined December 2024
-                                        </span>
+            <!-- VIEW PROFILE MODAL -->
+            <div class="modal-overlay" id="viewProfileModal">
+                <div class="modal-content modal-lg">
+                    <div class="modal-header">
+                        <h3>My Profile</h3>
+                        <button class="close-modal" id="closeViewProfileModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="profile-details">
+                            <div class="profile-header-section">
+                                <div class="profile-cover">
+                                    <div class="cover-placeholder">                                        
+                                        <div class="current-avatar">
+                                            <div class="default-avatar-placeholder" id="currentAvatar">
+                                                <?php
+                                                    if (empty($p_img)) {
+                                                        echo '<p>'.strtoupper($p_avater).'</p>';
+                                                    }else {
+                                                        echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                                    }
+                                                ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+                                <div class="profile-info-section">
+                                    <div class="profile-details-info">
+                                        <h2><?= $name ?></h2>
+                                        <p><?= $username ?></p>
+                                        <p><?= $bio ?></p>
+                                        <div class="profile-meta">
+                                            <span class="meta-item" id="profileLocation">
+                                                <i class="fas fa-briefcase"></i> 
+                                                <?php
+                                                    if (empty($prof)) {
+                                                        echo 'Not set yet';
+                                                    }else {
+                                                        echo $prof;
+                                                    }
+                                                ?>
+                                            </span>
+                                            <span class="meta-item" id="profileLocation">
+                                                <i class="fas fa-map-marker-alt"></i> 
+                                                <?php
+                                                    if (empty($location)) {
+                                                        echo 'Not set yet';
+                                                    }else {
+                                                        echo $location;
+                                                    }
+                                                ?>
+                                            </span>
+                                            <span class="meta-item" id="profileJoined">
+                                                <i class="fas fa-calendar-alt"></i> Joined <?= $datejoined ?>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="profile-stats-detailed">
-                            <div class="stat-detail">
-                                <span class="stat-number-large" id="profilePostsCount">0</span>
-                                <span class="stat-label-large">Posts</span>
+                            <div class="profile-stats-detailed">
+                                <div class="stat-detail">
+                                    <span class="stat-number-large" id="profilePostsCount">0</span>
+                                    <span class="stat-label-large">Posts</span>
+                                </div>
+                                <div class="stat-detail">
+                                    <span class="stat-number-large" id="profileFollowersCount">0</span>
+                                    <span class="stat-label-large">Followers</span>
+                                </div>
+                                <div class="stat-detail">
+                                    <span class="stat-number-large" id="profileFollowingCount">0</span>
+                                    <span class="stat-label-large">Following</span>
+                                </div>
                             </div>
-                            <div class="stat-detail">
-                                <span class="stat-number-large" id="profileFollowersCount">0</span>
-                                <span class="stat-label-large">Followers</span>
-                            </div>
-                            <div class="stat-detail">
-                                <span class="stat-number-large" id="profileFollowingCount">0</span>
-                                <span class="stat-label-large">Following</span>
-                            </div>
-                        </div>
 
-                        <div class="profile-actions-section">
-                            <button class="btn-primary" id="editProfileFromView">
-                                <i class="fas fa-edit"></i> Edit Profile
-                            </button>
+                            <div class="profile-actions-section">
+                                <button class="btn-primary" id="editProfileFromView">
+                                    <i class="fas fa-edit"></i> Edit Profile
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>            
 
-        <!-- FEED FILTERS -->
-        <div class="feed-filters">
-            <button class="filter-btn active" data-filter="all">
-                <i class="fas fa-fire"></i> Trending
-            </button>
-            <button class="filter-btn" data-filter="following">
-                <i class="fas fa-users"></i> Following
-            </button>
-            <button class="filter-btn" data-filter="latest">
-                <i class="fas fa-clock"></i> Latest
-            </button>
-        </div>
+            <section class="tabcontent" id="Home">
+                <div class="create-post-card">
+                    <div class="create-post-header">
+                        <div class="current-avatar">
+                            <div class="default-avatar-placeholder" id="currentAvatar">
+                                <?php
+                                    if (empty($p_img)) {
+                                        echo '<p>'.strtoupper($p_avater).'</p>';
+                                    }else {
+                                        echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                    }
+                                ?>
+                            </div>
+                        </div>
+                        <div class="create-post-input" id="createPostBtn">
+                            <span class="placeholder-text">What's on your mind?</span>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- POSTS CONTAINER -->
-        <div class="posts-container" id="postsContainer">
-            <!-- Posts will be loaded here dynamically -->
-        </div>
+                <!-- FEED FILTERS -->
+                <div class="feed-filters">
+                    <form method="POST" action="feed.php">
+                        <input type="hidden" value="all">
+                        <button type="submit" class="filter-btn active">
+                            <i class="fas fa-list"></i> All
+                        </button>
+                    </form>
+                    <form method="POST" action="feed.php">
+                        <input type="hidden" value="latest">
+                        <button type="submit" class="filter-btn">
+                            <i class="fas fa-fire"></i> Latest
+                        </button>
+                    </form>
+                    <form method="POST" action="feed.php">
+                        <input type="hidden" value="all">
+                        <button type="submit" class="filter-btn">
+                        <i class="fas fa-users"></i> Following
+                        </button>
+                    </form>
+                </div>
 
-        <!-- LOADING INDICATOR -->
-        <div class="loading-indicator" id="loadingIndicator">
-            <div class="spinner"></div>
-            <span>Loading more posts...</span>
-        </div>
+                <div>
+                    <?php
+                        $stmt = $conn ->prepare("SELECT * FROM posts");
+
+                    ?>
+                </div>
+            </section>
 
     </main>
 
@@ -391,10 +414,20 @@
         <!-- USER PROFILE CARD -->
         <div class="profile-card">
             <div class="profile-header">
-                <img src="assets/images/default-avatar.png" alt="Profile" class="profile-avatar">
+                <div class="current-avatar">
+                    <div class="default-avatar-placeholder" id="currentAvatar">
+                        <?php
+                            if (empty($p_img)) {
+                                echo '<p>'.strtoupper($p_avater).'</p>';
+                            }else {
+                                echo '<img src="assets/images/profile/'.$profile_img.'">';
+                            }
+                        ?>
+                    </div>
+                </div>
                 <div class="profile-info">
-                    <h4 class="profile-name" id="profileName">Your Name</h4>
-                    <p class="profile-username" id="profileUsername">@username</p>
+                    <h4 class="profile-name" id="profileName"><?= $name ?></h4>
+                    <p class="profile-username" id="profileUsername"><?= $username ?></p>
                 </div>
             </div>
             <div class="profile-stats">
@@ -416,21 +449,11 @@
             </div>
         </div>
 
-        <!-- FRIENDS LIST -->
-        <div class="friends-card">
-            <div class="card-header">
-                <h4>Friends</h4>
-                <a href="#" class="see-all">See all</a>
-            </div>
-            <div class="friends-list" id="friendsList">
-                <!-- Friends will be loaded here -->
-            </div>
-        </div>
-
         <!-- SUGGESTIONS -->
         <div class="suggestions-card">
             <div class="card-header">
                 <h4>People you may know</h4>
+                <p>Add new friends</p>
             </div>
             <div class="suggestions-list" id="suggestionsList">
                 <!-- Suggestions will be loaded here -->
@@ -464,23 +487,45 @@
 
     <script src="assets/js/social-dashboard.js"></script>
     <script>
-		function openPage(pageName,elmnt,color) {
-			var i, tabcontent, tablinks;
-		    tabcontent = document.getElementsByClassName("tabcontent");
-			for (i = 0; i < tabcontent.length; i++) {
-		        tabcontent[i].style.display = "none";
-			}
-			tablinks = document.getElementsByClassName("tablink");
-			for (i = 0; i < tablinks.length; i++) {
-			    tablinks[i].style.backgroundColor = "";
-			  }
-			  document.getElementById(pageName).style.display = "block";
-			  elmnt.style.backgroundColor = color;
-		}
-			
-		// Get the element with id="defaultOpen" and click on it
-		document.getElementById("defaultOpen").click();
-	</script>
+        function openPage(pageName, elmnt, backgroundColor, textColor) {
+            var i, tabcontent, tablinks;
+        
+            // Hide all tab contents
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+        
+            // Reset all tab buttons
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].style.backgroundColor = "";
+                tablinks[i].style.color = "";  // reset text color
+            }
+        
+            // Show current tab
+            document.getElementById(pageName).style.display = "block";
+        
+            // Apply active background + text color
+            elmnt.style.backgroundColor = backgroundColor;
+            elmnt.style.color = textColor;
+        }
+        
+        // Check URL hash and open corresponding tab, or default to "All"
+        const urlHash = window.location.hash.substring(1); // Remove the '#'
+        if (urlHash) {
+            const tabButton = document.querySelector(`button[onclick*="${urlHash}"]`);
+            if (tabButton) {
+                tabButton.click();
+            } else {
+                // If hash doesn't match any tab, default to "All"
+                document.getElementById("defaultOpen").click();
+            }
+        } else {
+            // No hash in URL, default to "All"
+            document.getElementById("defaultOpen").click();
+        }
+    </script>
 
 </body>
 </html>
