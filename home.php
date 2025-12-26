@@ -24,6 +24,7 @@
 <?php
     include 'config/db_connect.php';
     $email = $_SESSION["email"];
+    $user_id = $_SESSION['user_id'];
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt ->bind_param("s", $email);
     $stmt ->execute();
@@ -36,7 +37,7 @@
             $profile_img = $row["profile_img"];
             $name =  $row["full_name"];
             $bio = $row["bio"];
-            $prof = $row["proffession"];
+            $prof = $row["profession"];
             $location = $row["location"];
             $datejoined = $row["date"];
 
@@ -67,10 +68,10 @@
                     <div class="current-avatar">
                         <div class="default-avatar-placeholder">
                             <?php
-                                if (empty($p_img)) {
+                                if (empty($profile_img)) {
                                     echo '<p>'.strtoupper($p_avater).'</p>';
                                 }else {
-                                    echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                    echo '<img src="assets/images/profiles/'.$profile_img.'">';
                                 }
                             ?>
                         </div>
@@ -148,9 +149,9 @@
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="nav-item tablink" onclick="openPage('Followers', this, '#e7f3ff', '#1877f2')" data-section="profile">
+                <a href="#" class="nav-item tablink" onclick="openPage('Friends', this, '#e7f3ff', '#1877f2')" data-section="profile">
                     <i class="fas fa-users"></i>
-                    <span>Followers</span>
+                    <span>Friends</span>
                 </a>
                 <a href="#" class="nav-item" data-section="profile">
                     <i class="fas fa-user"></i>
@@ -183,11 +184,8 @@
                     <form action="create_post.php" method="POST" enctype="multipart/form-data">
                         <div class="modal-body">
                             <div class="post-content-section">
-                                <textarea
-                                    name="post_content"
-                                    placeholder="What's on your mind?"
-                                    class="post-textarea"
-                                    maxlength="500">
+                                <textarea name="post_text" maxlength="500" class="post-textarea"
+                                    placeholder="What's on your mind?" required>
                                 </textarea>
                                 <!-- Character Counter -->
                                 <div class="char-counter">
@@ -197,25 +195,22 @@
                             <!-- Image Preview Area -->
                             <div class="image-preview-container" id="imagePreviewContainer">
                                 <div class="image-preview-placeholder">
-                                    <i class="fas fa-images"></i>
-                                    <span>Add photos to your post</span>
+                                    <i class="fas fa-images"></i><span>Add photos to your post</span>
                                 </div>
                             </div>
-
                             <!-- Post Actions -->
                             <div class="post-actions">
                                 <div class="action-buttons">
                                     <label for="imageUpload" class="action-btn">
-                                        <i class="fas fa-image"></i> Photo
+                                        <i class="fas fa-image"></i> Add Photo
                                     </label>
-                                    <input type="file" id="imageUpload" name="post_images[]" multiple accept="image/*" style="display: none;">
+                                    <input type="file" id="imageUpload" name="img" multiple accept="image/*" style="display: none;">
                                 </div>
                             </div>
                         </div>
-
                         <div class="modal-footer">
-                            <button type="button" class="btn-secondary" onclick="closePostModal()">Cancel</button>
-                            <button type="submit" class="btn-primary" id="submitPost">
+                            <input type="reset" class="btn-secondary" value="Cancel">
+                            <button type="submit" class="btn-primary">
                                 <i class="fas fa-paper-plane"></i> Post
                             </button>
                         </div>
@@ -300,8 +295,8 @@
                                 <div class="profile-info-section">
                                     <div class="profile-details-info">
                                         <h2><?= $name ?></h2>
-                                        <p><?= $username ?></p>
-                                        <p><?= $bio ?></p>
+                                        <p class="profile-username-display">@<?= $username ?></p>
+                                        <p class="profile-bio"><?= ucfirst($bio) ?></p>
                                         <div class="profile-meta">
                                             <span class="meta-item" id="profileLocation">
                                                 <i class="fas fa-briefcase"></i> 
@@ -333,15 +328,28 @@
 
                             <div class="profile-stats-detailed">
                                 <div class="stat-detail">
-                                    <span class="stat-number-large" id="profilePostsCount">0</span>
+                                    <span class="stat-number-large">
+                                        <?php
+                                            $stmt = $conn->prepare("SELECT * FROM posts WHERE user_id = ?");
+                                            $stmt ->bind_param("i", $user_id);
+                                            $stmt ->execute();
+                                       
+                                            $result = $stmt -> get_result();
+                                            $count = $result -> num_rows;
+                                            if ($count > 0) {
+                                                echo $count;
+                                            }else {
+                                                echo '0';
+                                            }
+                                        ?></span>
                                     <span class="stat-label-large">Posts</span>
                                 </div>
                                 <div class="stat-detail">
-                                    <span class="stat-number-large" id="profileFollowersCount">0</span>
+                                    <span class="stat-number-large">0</span>
                                     <span class="stat-label-large">Followers</span>
                                 </div>
                                 <div class="stat-detail">
-                                    <span class="stat-number-large" id="profileFollowingCount">0</span>
+                                    <span class="stat-number-large">0</span>
                                     <span class="stat-label-large">Following</span>
                                 </div>
                             </div>
@@ -379,27 +387,31 @@
                 <!-- FEED FILTERS -->
                 <div class="feed-filters">
                     <form method="POST" action="feed.php">
-                        <input type="hidden" value="all">
+                        <input type="hidden" name="feed_filter" value="All">
                         <button type="submit" class="filter-btn active">
                             <i class="fas fa-list"></i> All
                         </button>
                     </form>
                     <form method="POST" action="feed.php">
-                        <input type="hidden" value="latest">
+                        <input type="hidden" name="feed_filter" value="Latest">
                         <button type="submit" class="filter-btn">
                             <i class="fas fa-fire"></i> Latest
                         </button>
                     </form>
                     <form method="POST" action="feed.php">
-                        <input type="hidden" value="all">
+                        <input type="hidden" name="feed_filter" value="Following">
                         <button type="submit" class="filter-btn">
-                        <i class="fas fa-users"></i> Following
+                            <i class="fas fa-users"></i> Following
                         </button>
                     </form>
                 </div>
 
                 <div>
                     <?php
+                        $filter = $_GET['filter'];
+                        if (empty($filter)) {
+                            
+                        }
                         $stmt = $conn ->prepare("SELECT * FROM posts");
 
                     ?>
@@ -427,7 +439,7 @@
                 </div>
                 <div class="profile-info">
                     <h4 class="profile-name" id="profileName"><?= $name ?></h4>
-                    <p class="profile-username" id="profileUsername"><?= $username ?></p>
+                    <p class="profile-username" id="profileUsername">@<?= $username ?></p>
                 </div>
             </div>
             <div class="profile-stats">
