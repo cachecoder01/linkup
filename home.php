@@ -408,12 +408,13 @@
 
                 <div>
                     <?php
-                        $filter = $_GET['filter'];
-                        if (empty($filter)) {
-                            
+                        if (empty($_SESSION["feed"])) {
+                            $feed = 'All';
+                        }else {
+                            $feed = $_SESSION["feed"];
                         }
-                        $stmt = $conn ->prepare("SELECT * FROM posts");
-
+                        echo $feed;
+                        
                     ?>
                 </div>
             </section>
