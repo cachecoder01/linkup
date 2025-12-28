@@ -78,8 +78,8 @@
                     </div>
                 </button>
                 <div class="user-dropdown" id="userDropdown">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user"></i> My Profile
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i> My Profile
                     </a>
                     <a href="logout.php" class="nav-item" onclick="return confirm('Are you sure you want to LogOut?')">
                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -280,12 +280,12 @@
                                 <div class="profile-cover">
                                     <div class="cover-placeholder">                                        
                                         <div class="current-avatar">
-                                            <div class="default-avatar-placeholder" id="currentAvatar">
+                                            <div class="default-avatar-placeholder">
                                                 <?php
-                                                    if (empty($p_img)) {
+                                                    if (empty($profile_img)) {
                                                         echo '<p>'.strtoupper($p_avater).'</p>';
                                                     }else {
-                                                        echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                                        echo '<img src="assets/images/profiles/'.$profile_img.'">';
                                                     }
                                                 ?>
                                             </div>
@@ -298,7 +298,7 @@
                                         <p class="profile-username-display">@<?= $username ?></p>
                                         <p class="profile-bio"><?= ucfirst($bio) ?></p>
                                         <div class="profile-meta">
-                                            <span class="meta-item" id="profileLocation">
+                                            <span class="meta-item">
                                                 <i class="fas fa-briefcase"></i> 
                                                 <?php
                                                     if (empty($prof)) {
@@ -308,7 +308,7 @@
                                                     }
                                                 ?>
                                             </span>
-                                            <span class="meta-item" id="profileLocation">
+                                            <span class="meta-item">
                                                 <i class="fas fa-map-marker-alt"></i> 
                                                 <?php
                                                     if (empty($location)) {
@@ -341,7 +341,8 @@
                                             }else {
                                                 echo '0';
                                             }
-                                        ?></span>
+                                        ?>
+                                    </span>
                                     <span class="stat-label-large">Posts</span>
                                 </div>
                                 <div class="stat-detail">
@@ -368,12 +369,12 @@
                 <div class="create-post-card">
                     <div class="create-post-header">
                         <div class="current-avatar">
-                            <div class="default-avatar-placeholder" id="currentAvatar">
+                            <div class="default-avatar-placeholder">
                                 <?php
-                                    if (empty($p_img)) {
+                                    if (empty($profile_img)) {
                                         echo '<p>'.strtoupper($p_avater).'</p>';
                                     }else {
-                                        echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                        echo '<img src="assets/images/profiles/'.$profile_img.'">';
                                     }
                                 ?>
                             </div>
@@ -398,12 +399,6 @@
                             <i class="fas fa-fire"></i> Latest
                         </button>
                     </form>
-                    <form method="POST" action="feed.php">
-                        <input type="hidden" name="feed_filter" value="Following">
-                        <button type="submit" class="filter-btn">
-                            <i class="fas fa-users"></i> Following
-                        </button>
-                    </form>
                 </div>
 
                 <div>
@@ -413,8 +408,46 @@
                         }else {
                             $feed = $_SESSION["feed"];
                         }
-                        echo $feed;
-                        
+                        include 'post.php';
+                        $posts = feed($feed);                                           
+                        if (!empty($posts)) {
+                            foreach ($posts as $post) {
+                                $poster_id = $post["user_id"];
+                                $post_text = $post["post_text"];
+                                $post_img = $post["post_img"];
+                                $post_date = $post["date"];
+
+                                echo '<div class="dashboard-feed">
+                                    <div class="posts-card">
+                                        <div class="post-header">
+                                            <a href="profile_view" class="avatar-container">
+                                                <div class="avatar"><img src="assets/images/profiles/'.$profile_img.'"></div>
+                                                <div>
+                                                    <div class="name">John Doe</div>
+                                                    <p class="profile-username">@' .$username. '</p>
+                                                </div>
+                                            </a>                                            
+                                            <div>                          
+                                                <div class="post-date">' .$post_date. '</div>
+                                            </div>
+                                        </div>
+                                        <div class="post-body">
+                                            <p>' .$post_text. '</p>';
+                                            if (!empty($post_img)) {
+                                                echo '<img src="assets/images/posts/'.$post_img.'" alt="Post image">';
+                                            }
+                                    echo '</div>
+
+                                        <div class="post-actions">
+                                            <button>❤️ Like</button>
+                                            <button>💬 Comment</button>
+                                            <button>🔁 Share</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ';
+                            }                            
+                        }
                     ?>
                 </div>
             </section>
@@ -428,32 +461,46 @@
         <div class="profile-card">
             <div class="profile-header">
                 <div class="current-avatar">
-                    <div class="default-avatar-placeholder" id="currentAvatar">
+                    <div class="default-avatar-placeholder">
                         <?php
-                            if (empty($p_img)) {
+                            if (empty($profile_img)) {
                                 echo '<p>'.strtoupper($p_avater).'</p>';
                             }else {
-                                echo '<img src="assets/images/profile/'.$profile_img.'">';
+                                echo '<img src="assets/images/profiles/'.$profile_img.'">';
                             }
                         ?>
                     </div>
                 </div>
                 <div class="profile-info">
-                    <h4 class="profile-name" id="profileName"><?= $name ?></h4>
-                    <p class="profile-username" id="profileUsername">@<?= $username ?></p>
+                    <h4 class="profile-name"><?= $name ?></h4>
+                    <p class="profile-username">@<?= $username ?></p>
                 </div>
             </div>
             <div class="profile-stats">
                 <div class="stat">
-                    <span class="stat-number" id="postsCount">0</span>
+                    <span class="stat-number" id="postsCount">
+                        <?php
+                            $stmt = $conn->prepare("SELECT * FROM posts WHERE user_id = ?");
+                            $stmt ->bind_param("i", $user_id);
+                            $stmt ->execute();
+                                       
+                            $result = $stmt -> get_result();
+                            $count = $result -> num_rows;
+                            if ($count > 0) {
+                                echo $count;
+                            }else {
+                                echo '0';
+                            }
+                        ?>
+                    </span>
                     <span class="stat-label">Posts</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number" id="followersCount">0</span>
+                    <span class="stat-number">0</span>
                     <span class="stat-label">Followers</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number" id="followingCount">0</span>
+                    <span class="stat-number">0</span>
                     <span class="stat-label">Following</span>
                 </div>
             </div>

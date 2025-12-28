@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("location: home.php");
             }else {
                 echo '<div class="form-container">
-                        <p>password do not match</p>
+                        <p>Wrong Password</p>
                         <a href="login.html" class="btn primary">Try Again</a>
                     </div>';
             }
