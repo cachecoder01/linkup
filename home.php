@@ -54,27 +54,25 @@
 
         <div class="header-right">
             <div class="header-icons">
-                <button class="icon-btn" title="Notifications">
+                <button class="icon-btn">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge">3</span>
                 </button>
-                <button class="icon-btn" title="Messages">
+                <button class="icon-btn">
                     <i class="fas fa-envelope"></i>
                     <span class="notification-badge">2</span>
                 </button>
             </div>
             <div class="user-menu user">
                 <button class="icon-btn">
-                    <div class="current-avatar">
-                        <div class="default-avatar-placeholder">
-                            <?php
-                                if (empty($profile_img)) {
-                                    echo '<p>'.strtoupper($p_avater).'</p>';
-                                }else {
-                                    echo '<img src="assets/images/profiles/'.$profile_img.'">';
-                                }
-                            ?>
-                        </div>
+                    <div class="default-avatar-placeholder">
+                        <?php
+                            if (empty($profile_img)) {
+                                echo '<p>'.strtoupper($p_avater).'</p>';
+                            }else {
+                                echo '<img src="assets/images/profiles/'.$profile_img.'">';
+                            }
+                        ?>
                     </div>
                 </button>
                 <div class="user-dropdown" id="userDropdown">
@@ -102,10 +100,8 @@
                             <form method="POST" action="profile.php" enctype="multipart/form-data">
                                 <div class="modal-body">
                                     <div class="profile-avatar-section">
-                                        <div class="current-avatar">
-                                                <div class="default-avatar-placeholder" id="currentAvatar">
-                                                <p>'.strtoupper($p_avater).'</p>
-                                            </div>
+                                        <div class="default-avatar-placeholder" id="currentAvatar">
+                                            <p>'.strtoupper($p_avater).'</p>
                                         </div>
                                         <div class="avatar-actions">
                                             <button class="btn-secondary" id="changeAvatarBtn">
@@ -172,8 +168,7 @@
         </aside>
 
         <!-- MAIN FEED -->
-        <main class="main-feed">     
-
+        <main class="main-feed">
             <!-- CREATE POST MODAL -->
             <div class="modal-overlay" id="postModal">
                 <div class="modal-content modal-post">
@@ -218,55 +213,6 @@
                 </div>
             </div>
 
-            <!-- EDIT PROFILE MODAL -->
-            <div class="modal-overlay" id="editProfileModal">
-                <div class="modal-content modal-lg">
-                    <div class="modal-header">
-                        <h3>Edit Profile</h3>
-                        <button class="close-modal" id="closeEditProfileModal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="profile-edit-form">
-                            <div class="profile-avatar-section">
-                                <div class="current-avatar">
-                                    <img src="assets/images/default-avatar.png" alt="Current avatar" id="currentAvatar">
-                                </div>
-                                <div class="avatar-actions">
-                                    <button class="btn-secondary" id="changeAvatarBtn">
-                                        <i class="fas fa-camera"></i> Change Photo
-                                    </button>
-                                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="editUsername">Username</label>
-                                <input type="text" id="editUsername" class="form-input" placeholder="Enter username">
-                            </div>
-                            <div class="form-group">
-                                <label for="editEmail">Full Name</label>
-                                <input type="text" name="name" class="form-input" placeholder="Enter Full Name">
-                            </div>
-                            <div class="form-group">
-                                <label for="editEmail">Profession</label>
-                                <input type="text" name="profession" class="form-input" placeholder="Enter Profession">
-                            </div>
-                            <div class="form-group">
-                                <label for="editBio">Bio</label>
-                                <textarea id="editBio" class="form-textarea" placeholder="Tell us about yourself..." rows="4"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="editLocation">Location</label>
-                                <input type="text" id="editLocation" class="form-input" placeholder="City, Country">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-secondary" id="cancelEditProfile">Cancel</button>
-                        <button class="btn-primary" id="saveProfile">Save Changes</button>
-                    </div>
-                </div>
-            </div>
-
             <!-- VIEW PROFILE MODAL -->
             <div class="modal-overlay" id="viewProfileModal">
                 <div class="modal-content modal-lg">
@@ -278,24 +224,22 @@
                         <div class="profile-details">
                             <div class="profile-header-section">
                                 <div class="profile-cover">
-                                    <div class="cover-placeholder">                                        
-                                        <div class="current-avatar">
-                                            <div class="default-avatar-placeholder">
-                                                <?php
-                                                    if (empty($profile_img)) {
-                                                        echo '<p>'.strtoupper($p_avater).'</p>';
-                                                    }else {
-                                                        echo '<img src="assets/images/profiles/'.$profile_img.'">';
-                                                    }
-                                                ?>
-                                            </div>
+                                    <div class="cover-placeholder">
+                                        <div class="default-avatar-placeholder">
+                                            <?php
+                                                if (empty($profile_img)) {
+                                                    echo '<p>'.strtoupper($p_avater).'</p>';
+                                                }else {
+                                                    echo '<img src="assets/images/profiles/'.$profile_img.'">';
+                                                }
+                                            ?>
                                         </div>
                                     </div>
                                 </div>                                
                                 <div class="profile-info-section">
                                     <div class="profile-details-info">
                                         <h2><?= $name ?></h2>
-                                        <p class="profile-username-display">@<?= $username ?></p>
+                                        <p class="profile-username">@<?= $username ?></p>
                                         <p class="profile-bio"><?= ucfirst($bio) ?></p>
                                         <div class="profile-meta">
                                             <span class="meta-item">
@@ -325,7 +269,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="profile-stats-detailed">
                                 <div class="stat-detail">
                                     <span class="stat-number-large">
@@ -354,12 +297,6 @@
                                     <span class="stat-label-large">Following</span>
                                 </div>
                             </div>
-
-                            <div class="profile-actions-section">
-                                <button class="btn-primary" id="editProfileFromView">
-                                    <i class="fas fa-edit"></i> Edit Profile
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -368,7 +305,6 @@
             <section class="tabcontent" id="Home">
                 <div class="create-post-card">
                     <div class="create-post-header">
-                        <div class="current-avatar">
                             <div class="default-avatar-placeholder">
                                 <?php
                                     if (empty($profile_img)) {
@@ -378,7 +314,6 @@
                                     }
                                 ?>
                             </div>
-                        </div>
                         <div class="create-post-input" id="createPostBtn">
                             <span class="placeholder-text">What's on your mind?</span>
                         </div>
@@ -386,30 +321,38 @@
                 </div>
 
                 <!-- FEED FILTERS -->
-                <div class="feed-filters">
-                    <form method="POST" action="feed.php">
-                        <input type="hidden" name="feed_filter" value="All">
-                        <button type="submit" class="filter-btn active">
-                            <i class="fas fa-list"></i> All
-                        </button>
-                    </form>
-                    <form method="POST" action="feed.php">
-                        <input type="hidden" name="feed_filter" value="Latest">
-                        <button type="submit" class="filter-btn">
-                            <i class="fas fa-fire"></i> Latest
-                        </button>
-                    </form>
-                </div>
-
                 <div>
                     <?php
-                        if (empty($_SESSION["feed"])) {
-                            $feed = 'All';
-                        }else {
-                            $feed = $_SESSION["feed"];
-                        }
+                        // Get current feed filter (default = All)
+                        $feed = $_SESSION['feed'] ?? 'All';
+
+                        // Define available filters
+                        $filters = [
+                            'All' => [
+                                'icon' => 'fa-list',
+                                'label' => 'All'
+                            ],
+                            'Latest' => [
+                                'icon' => 'fa-fire',
+                                'label' => 'Latest'
+                            ]
+                        ];
+                    ?>
+
+                    <div class="feed-filters">
+                        <?php foreach ($filters as $key => $filter): ?>
+                        <form method="POST" action="feed.php">
+                            <input type="hidden" name="feed_filter" value="<?= htmlspecialchars($key) ?>">
+                            <button type="submit" class="filter-btn <?= ($feed === $key) ? 'active' : '' ?>">
+                                <i class="fas <?= $filter['icon'] ?>"></i> <?= htmlspecialchars($filter['label']) ?>
+                            </button>
+                        </form>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <?php
                         include 'post.php';
-                        $posts = feed($feed);                                           
+                        $posts = feed($feed);
                         if (!empty($posts)) {
                             foreach ($posts as $post) {
                                 $poster_id = $post["user_id"];
@@ -417,14 +360,27 @@
                                 $post_img = $post["post_img"];
                                 $post_date = $post["date"];
 
+                                $profile = postProfile($poster_id);
+                                $full_name = $profile['full_name'];
+                                $p_username = $profile['username'];
+                                $p_profile = $profile['profile_img'];
+
+                                $pp_avatar = substr($p_username, 0, 1);
+
                                 echo '<div class="dashboard-feed">
                                     <div class="posts-card">
                                         <div class="post-header">
                                             <a href="profile_view" class="avatar-container">
-                                                <div class="avatar"><img src="assets/images/profiles/'.$profile_img.'"></div>
+                                                <div class="default-avatar-placeholder">';
+                                                    if (empty($p_profile)) {
+                                                        echo '<p>'.strtoupper($pp_avatar).'</p>';
+                                                    }else {
+                                                        echo '<img src="assets/images/profiles/'.$p_profile.'">';
+                                                    }
+                                                   echo '</div>
                                                 <div>
-                                                    <div class="name">John Doe</div>
-                                                    <p class="profile-username">@' .$username. '</p>
+                                                    <div class="name">' .$full_name. '</div>
+                                                    <p class="profile-username">@' .$p_username. '</p>
                                                 </div>
                                             </a>                                            
                                             <div>                          
@@ -438,7 +394,7 @@
                                             }
                                     echo '</div>
 
-                                        <div class="post-actions">
+                                        <div class="posts-actions">
                                             <button>❤️ Like</button>
                                             <button>💬 Comment</button>
                                             <button>🔁 Share</button>
@@ -456,11 +412,9 @@
 
     <!-- RIGHT SIDEBAR -->
     <aside class="right-sidebar">
-
         <!-- USER PROFILE CARD -->
         <div class="profile-card">
             <div class="profile-header">
-                <div class="current-avatar">
                     <div class="default-avatar-placeholder">
                         <?php
                             if (empty($profile_img)) {
@@ -470,7 +424,6 @@
                             }
                         ?>
                     </div>
-                </div>
                 <div class="profile-info">
                     <h4 class="profile-name"><?= $name ?></h4>
                     <p class="profile-username">@<?= $username ?></p>
@@ -504,9 +457,6 @@
                     <span class="stat-label">Following</span>
                 </div>
             </div>
-            <div class="profile-actions">
-                <button class="btn-outline">Edit Profile</button>
-            </div>
         </div>
 
         <!-- SUGGESTIONS -->
@@ -515,9 +465,88 @@
                 <h4>People you may know</h4>
                 <p>Add new friends</p>
             </div>
-            <div class="suggestions-list" id="suggestionsList">
-                <!-- Suggestions will be loaded here -->
+            <div class="suggestions-list">
+                <!-- User Suggestion 1 -->
+                <div class="suggestion-item">
+                    <div class="suggestion-info">
+                        <div class="suggestion-avatar">
+                            <div class="default-avatar-placeholder">
+                                <p>A</p>
+                            </div>
+                        </div>
+                        <div class="suggestion-details">
+                            <h5>Alex Johnson</h5>
+                            <p>5 mutual friends</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <!-- User Suggestion 2 -->
+                <div class="suggestion-item">
+                    <div class="suggestion-info">
+                        <div class="suggestion-avatar">
+                            <div class="default-avatar-placeholder">
+                                <p>S</p>
+                            </div>
+                        </div>
+                        <div class="suggestion-details">
+                            <h5>Sarah Chen</h5>
+                            <p>12 mutual friends</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <!-- User Suggestion 3 -->
+                <div class="suggestion-item">
+                    <div class="suggestion-info">
+                        <div class="suggestion-avatar">
+                            <div class="default-avatar-placeholder">
+                                <p>M</p>
+                            </div>
+                        </div>
+                        <div class="suggestion-details">
+                            <h5>Michael Davis</h5>
+                            <p>3 mutual friends</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <!-- User Suggestion 4 -->
+                <div class="suggestion-item">
+                    <div class="suggestion-info">
+                        <div class="suggestion-avatar">
+                            <div class="default-avatar-placeholder">
+                                <p>E</p>
+                            </div>
+                        </div>
+                        <div class="suggestion-details">
+                            <h5>Emma Wilson</h5>
+                            <p>8 mutual friends</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
+
+                <!-- User Suggestion 5 -->
+                <div class="suggestion-item">
+                    <div class="suggestion-info">
+                        <div class="suggestion-avatar">
+                            <div class="default-avatar-placeholder">
+                                <p>J</p>
+                            </div>
+                        </div>
+                        <div class="suggestion-details">
+                            <h5>James Rodriguez</h5>
+                            <p>2 mutual friends</p>
+                        </div>
+                    </div>
+                    <button class="follow-btn">Follow</button>
+                </div>
             </div>
+            <a href="#" class="see-all">See more</a>
         </div>
 
         <!-- TRENDING TOPICS -->
