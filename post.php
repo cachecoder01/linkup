@@ -44,4 +44,16 @@
             return null;
        
     }
+
+    function friendsCount($user_id) {
+        global $conn;
+    
+        $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM friends WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+    
+        $result = $stmt->get_result()->fetch_assoc();
+        return (int) $result['total'];
+    }
+    
 ?>

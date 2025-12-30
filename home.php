@@ -289,12 +289,25 @@
                                     <span class="stat-label-large">Posts</span>
                                 </div>
                                 <div class="stat-detail">
-                                    <span class="stat-number-large">0</span>
-                                    <span class="stat-label-large">Followers</span>
-                                </div>
-                                <div class="stat-detail">
-                                    <span class="stat-number-large">0</span>
-                                    <span class="stat-label-large">Following</span>
+                                    <span class="stat-number-large">
+                                        <?php
+                                            /*$user_id = $_SESSION['user_id'];
+                                            echo friendsCount($user_id);*/
+                                        
+                                            $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id = ?");
+                                            $stmt ->bind_param("i", $user_id);
+                                            $stmt ->execute();
+                                       
+                                            $result = $stmt -> get_result();
+                                            $count = $result -> num_rows;
+                                            if ($count > 0) {
+                                                echo $count;
+                                            }else {
+                                                echo '0';
+                                            }
+                                        ?>
+                                    </span>
+                                    <span class="stat-label-large">Friends</span>
                                 </div>
                             </div>
                         </div>
@@ -370,7 +383,7 @@
                                 echo '<div class="dashboard-feed">
                                     <div class="posts-card">
                                         <div class="post-header">
-                                            <a href="profile_view" class="avatar-container">
+                                            <a href="profile_view.php?id='.$poster_id.'" class="avatar-container">
                                                 <div class="default-avatar-placeholder">';
                                                     if (empty($p_profile)) {
                                                         echo '<p>'.strtoupper($pp_avatar).'</p>';
@@ -405,6 +418,501 @@
                             }                            
                         }
                     ?>
+                </div>
+            </section>
+
+            <section class="tabcontent" id="Friends">
+                <!-- FRIENDS HEADER -->
+                <div class="friends-header">
+                    <div class="friends-title">
+                        <h2>Friends</h2>                        
+                        <span class="friends-count">
+                            <i class="fa fa-users"></i>
+                            0 friends</span>
+                    </div>
+                    <div class="friends-search">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search friends..." id="friendSearch">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRIENDS TABS -->
+                <div class="friends-tabs">
+                    <button class="friends-tab active" onclick="openFriendsTab('allFriends', this)">
+                        <i class="fas fa-users"></i>
+                        <span>All Friends</span>
+                    </button>
+                    <button class="friends-tab" onclick="openFriendsTab('friendRequests', this)">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Friend Requests</span>
+                        <span class="tab-badge">0</span>
+                    </button>
+                    <button class="friends-tab" onclick="openFriendsTab('findFriends', this)">
+                        <i class="fas fa-search"></i>
+                        <span>Find Friends</span>
+                    </button>
+                </div>
+
+                <!-- FRIENDS CONTENT -->
+                <div class="friends-content">
+                    <!-- ALL FRIENDS TAB -->
+                    <div id="allFriends" class="friends-tab-content active">
+                        <div class="friends-toolbar">
+                            <div class="friends-sort">
+                                <select class="sort-select">
+                                    <option value="recent">Recently Added</option>
+                                    <option value="name">Name (A-Z)</option>
+                                    <option value="online">Online First</option>
+                                </select>
+                            </div>
+                            <div class="friends-view-toggle">
+                                <button class="view-btn active" data-view="grid">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button class="view-btn" data-view="list">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="friends-list" id="friendsList">
+                            <!-- Friend Item -->
+                            <div class="friend-item">
+                                <div class="friend-info">
+                                    <div class="friend-avatar">
+                                        <div class="default-avatar-placeholder">
+                                            <p>J</p>
+                                        </div>
+                                        <div class="online-status online"></div>
+                                        <div class="friend-badge premium">
+                                            <i class="fas fa-crown"></i>
+                                        </div>
+                                    </div>
+                                    <div class="friend-details">
+                                        <div class="friend-name-row">
+                                            <h4>John Doe</h4>
+                                            <div class="friend-menu">
+                                                <button class="friend-menu-btn">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <div class="friend-menu-dropdown">
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-user-check"></i> View Profile
+                                                    </a>
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-envelope"></i> Send Message
+                                                    </a>
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-user-times"></i> Unfriend
+                                                    </a>
+                                                    <a href="#" class="menu-item danger">
+                                                        <i class="fas fa-ban"></i> Block
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p>@johndoe</p>
+                                        <div class="friend-meta">
+                                            <span class="friend-status">Online</span>
+                                            <span class="friend-location">New York, NY</span>
+                                        </div>
+                                        <div class="friend-mutual">
+                                            <i class="fas fa-users"></i> 5 mutual friends
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="friend-action-btn message-btn">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Message</span>
+                                    </button>
+                                    <button class="friend-action-btn call-btn">
+                                        <i class="fas fa-phone"></i>
+                                        <span>Call</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Friend Item -->
+                            <div class="friend-item">
+                                <div class="friend-info">
+                                    <div class="friend-avatar">
+                                        <div class="default-avatar-placeholder">
+                                            <p>S</p>
+                                        </div>
+                                        <div class="online-status offline"></div>
+                                    </div>
+                                    <div class="friend-details">
+                                        <div class="friend-name-row">
+                                            <h4>Sarah Wilson</h4>
+                                            <div class="friend-menu">
+                                                <button class="friend-menu-btn">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <div class="friend-menu-dropdown">
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-user-check"></i> View Profile
+                                                    </a>
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-envelope"></i> Send Message
+                                                    </a>
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-user-times"></i> Unfriend
+                                                    </a>
+                                                    <a href="#" class="menu-item danger">
+                                                        <i class="fas fa-ban"></i> Block
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p>@sarahw</p>
+                                        <div class="friend-meta">
+                                            <span class="friend-status">Last seen 2 hours ago</span>
+                                            <span class="friend-location">Los Angeles, CA</span>
+                                        </div>
+                                        <div class="friend-mutual">
+                                            <i class="fas fa-users"></i> 12 mutual friends
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="friend-action-btn message-btn">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Message</span>
+                                    </button>
+                                    <button class="friend-action-btn call-btn">
+                                        <i class="fas fa-phone"></i>
+                                        <span>Call</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Friend Item -->
+                            <div class="friend-item">
+                                <div class="friend-info">
+                                    <div class="friend-avatar">
+                                        <div class="default-avatar-placeholder">
+                                            <p>M</p>
+                                        </div>
+                                        <div class="online-status online"></div>
+                                    </div>
+                                    <div class="friend-details">
+                                        <div class="friend-name-row">
+                                            <h4>Mike Johnson</h4>
+                                            <div class="friend-menu">
+                                                <button class="friend-menu-btn">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </button>
+                                                <div class="friend-menu-dropdown">
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-user-check"></i> View Profile
+                                                    </a>
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-envelope"></i> Send Message
+                                                    </a>
+                                                    <a href="#" class="menu-item">
+                                                        <i class="fas fa-user-times"></i> Unfriend
+                                                    </a>
+                                                    <a href="#" class="menu-item danger">
+                                                        <i class="fas fa-ban"></i> Block
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p>@mikej</p>
+                                        <div class="friend-meta">
+                                            <span class="friend-status">Online</span>
+                                            <span class="friend-location">Chicago, IL</span>
+                                        </div>
+                                        <div class="friend-mutual">
+                                            <i class="fas fa-users"></i> 8 mutual friends
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="friend-actions">
+                                    <button class="friend-action-btn message-btn">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Message</span>
+                                    </button>
+                                    <button class="friend-action-btn call-btn">
+                                        <i class="fas fa-phone"></i>
+                                        <span>Call</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Loading State -->
+                            <div class="friends-loading" style="display: none;">
+                                <div class="loading-spinner"></div>
+                                <p>Loading friends...</p>
+                            </div>
+
+                            <!-- No Friends Message -->
+                            <div class="no-friends" style="display: none;">
+                                <div class="no-friends-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3>No friends yet</h3>
+                                <p>Start connecting with people by sending friend requests or searching for friends.</p>
+                                <button class="btn-primary find-friends-btn" onclick="openFriendsTab('findFriends', document.querySelector('.friends-tab[onclick*=\"findFriends\"]'))">
+                                    Find Friends
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FRIEND REQUESTS TAB -->
+                    <div id="friendRequests" class="friends-tab-content">
+                        <div class="requests-toolbar">
+                            <div class="requests-filter">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="received">Received</button>
+                                <button class="filter-btn" data-filter="sent">Sent</button>
+                            </div>
+                        </div>
+
+                        <div class="requests-container">
+                            <!-- Received Requests -->
+                            <div class="requests-section received-requests">
+                                <div class="section-header">
+                                    <h3>Friend Requests</h3>
+                                    <span class="request-count">2</span>
+                                </div>
+                                <div class="requests-list">
+                                    <!-- Request Item -->
+                                    <div class="request-item">
+                                        <div class="request-info">
+                                            <div class="request-avatar">
+                                                <div class="default-avatar-placeholder">
+                                                    <p>M</p>
+                                                </div>
+                                            </div>
+                                            <div class="request-details">
+                                                <h4>Mike Johnson</h4>
+                                                <p>@mikej</p>
+                                                <div class="request-meta">
+                                                    <span class="mutual-count">2 mutual friends</span>
+                                                    <span class="request-time">2 days ago</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="request-actions">
+                                            <button class="btn-primary accept-btn" onclick="acceptFriendRequest(this)">
+                                                <i class="fas fa-check"></i>
+                                                Accept
+                                            </button>
+                                            <button class="btn-secondary decline-btn" onclick="declineFriendRequest(this)">
+                                                <i class="fas fa-times"></i>
+                                                Decline
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Request Item -->
+                                    <div class="request-item">
+                                        <div class="request-info">
+                                            <div class="request-avatar">
+                                                <div class="default-avatar-placeholder">
+                                                    <p>E</p>
+                                                </div>
+                                            </div>
+                                            <div class="request-details">
+                                                <h4>Emma Davis</h4>
+                                                <p>@emmad</p>
+                                                <div class="request-meta">
+                                                    <span class="mutual-count">5 mutual friends</span>
+                                                    <span class="request-time">1 week ago</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="request-actions">
+                                            <button class="btn-primary accept-btn" onclick="acceptFriendRequest(this)">
+                                                <i class="fas fa-check"></i>
+                                                Accept
+                                            </button>
+                                            <button class="btn-secondary decline-btn" onclick="declineFriendRequest(this)">
+                                                <i class="fas fa-times"></i>
+                                                Decline
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sent Requests -->
+                            <div class="requests-section sent-requests">
+                                <div class="section-header">
+                                    <h3>Sent Requests</h3>
+                                    <span class="request-count">1</span>
+                                </div>
+                                <div class="requests-list">
+                                    <!-- Sent Request Item -->
+                                    <div class="request-item sent">
+                                        <div class="request-info">
+                                            <div class="request-avatar">
+                                                <div class="default-avatar-placeholder">
+                                                    <p>A</p>
+                                                </div>
+                                            </div>
+                                            <div class="request-details">
+                                                <h4>Alex Chen</h4>
+                                                <p>@alexchen</p>
+                                                <div class="request-meta">
+                                                    <span class="request-status">Pending</span>
+                                                    <span class="request-time">3 days ago</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="request-actions">
+                                            <button class="btn-secondary cancel-btn" onclick="cancelFriendRequest(this)">
+                                                <i class="fas fa-times"></i>
+                                                Cancel Request
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- No Requests Message -->
+                            <div class="no-requests" style="display: none;">
+                                <div class="no-requests-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <h3>No friend requests</h3>
+                                <p>When someone sends you a friend request, it will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FIND FRIENDS TAB -->
+                    <div id="findFriends" class="friends-tab-content">
+                        <div class="find-friends-toolbar">
+                            <div class="search-filters">
+                                <select class="filter-select">
+                                    <option value="all">All People</option>
+                                    <option value="mutual">With Mutual Friends</option>
+                                    <option value="location">Nearby</option>
+                                    <option value="interests">Similar Interests</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="find-friends-container">
+                            <!-- Search Suggestions -->
+                            <div class="search-suggestions">
+                                <div class="suggestions-header">
+                                    <h3>People you may know</h3>
+                                    <p>Based on your mutual friends and activity</p>
+                                </div>
+                                <div class="suggestions-grid">
+                                    <!-- Suggestion Card -->
+                                    <div class="suggestion-card">
+                                        <div class="suggestion-header">
+                                            <div class="suggestion-avatar">
+                                                <div class="default-avatar-placeholder">
+                                                    <p>R</p>
+                                                </div>
+                                                <div class="online-indicator online"></div>
+                                            </div>
+                                            <div class="suggestion-actions">
+                                                <button class="btn-primary add-friend-btn" onclick="sendFriendRequest(this)">
+                                                    <i class="fas fa-user-plus"></i>
+                                                    Add Friend
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="suggestion-details">
+                                            <h4>Robert Brown</h4>
+                                            <p>@robertb</p>
+                                            <div class="suggestion-meta">
+                                                <span class="mutual-friends">8 mutual friends</span>
+                                                <span class="common-interest">Likes photography</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Suggestion Card -->
+                                    <div class="suggestion-card">
+                                        <div class="suggestion-header">
+                                            <div class="suggestion-avatar">
+                                                <div class="default-avatar-placeholder">
+                                                    <p>D</p>
+                                                </div>
+                                                <div class="online-indicator online"></div>
+                                            </div>
+                                            <div class="suggestion-actions">
+                                                <button class="btn-primary add-friend-btn" onclick="sendFriendRequest(this)">
+                                                    <i class="fas fa-user-plus"></i>
+                                                    Add Friend
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="suggestion-details">
+                                            <h4>David Lee</h4>
+                                            <p>@davidl</p>
+                                            <div class="suggestion-meta">
+                                                <span class="mutual-friends">3 mutual friends</span>
+                                                <span class="common-interest">From San Francisco</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Suggestion Card -->
+                                    <div class="suggestion-card">
+                                        <div class="suggestion-header">
+                                            <div class="suggestion-avatar">
+                                                <div class="default-avatar-placeholder">
+                                                    <p>C</p>
+                                                </div>
+                                                <div class="online-indicator offline"></div>
+                                            </div>
+                                            <div class="suggestion-actions">
+                                                <button class="btn-primary add-friend-btn" onclick="sendFriendRequest(this)">
+                                                    <i class="fas fa-user-plus"></i>
+                                                    Add Friend
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="suggestion-details">
+                                            <h4>Carol Martinez</h4>
+                                            <p>@carolm</p>
+                                            <div class="suggestion-meta">
+                                                <span class="mutual-friends">15 mutual friends</span>
+                                                <span class="common-interest">Loves hiking</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="load-more-container">
+                                    <button class="btn-secondary load-more-btn">
+                                        <i class="fas fa-plus"></i>
+                                        Load More Suggestions
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Search Results (shown when searching) -->
+                            <div class="search-results" style="display: none;">
+                                <div class="results-header">
+                                    <h3>Search Results</h3>
+                                    <span class="results-count">0 results</span>
+                                </div>
+                                <div class="results-list">
+                                    <!-- Results will be populated by JavaScript -->
+                                </div>
+                                <div class="no-results" style="display: none;">
+                                    <div class="no-results-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <h4>No results found</h4>
+                                    <p>Try searching with a different name or username.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -450,11 +958,7 @@
                 </div>
                 <div class="stat">
                     <span class="stat-number">0</span>
-                    <span class="stat-label">Followers</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">0</span>
-                    <span class="stat-label">Following</span>
+                    <span class="stat-label">Friends</span>
                 </div>
             </div>
         </div>
@@ -497,23 +1001,6 @@
                     </div>
                     <button class="follow-btn">Follow</button>
                 </div>
-
-                <!-- User Suggestion 3 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>M</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Michael Davis</h5>
-                            <p>3 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
-
                 <!-- User Suggestion 4 -->
                 <div class="suggestion-item">
                     <div class="suggestion-info">
@@ -543,7 +1030,7 @@
                             <p>2 mutual friends</p>
                         </div>
                     </div>
-                    <button class="follow-btn">Follow</button>
+                    <button class="follow-btn">Connect</button>
                 </div>
             </div>
             <a href="#" class="see-all">See more</a>
@@ -598,6 +1085,184 @@
             // Apply active background + text color
             elmnt.style.backgroundColor = backgroundColor;
             elmnt.style.color = textColor;
+        }
+
+        // Friends tabs functionality
+        function openFriendsTab(tabName, elmnt) {
+            var i, tabcontent, tablinks;
+
+            // Hide all friends tab contents
+            tabcontent = document.getElementsByClassName("friends-tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+
+            // Reset all friends tab buttons
+            tablinks = document.getElementsByClassName("friends-tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            // Show current tab
+            document.getElementById(tabName).classList.add("active");
+
+            // Apply active class to clicked tab
+            elmnt.classList.add("active");
+        }
+
+        // Enhanced friend menu functionality
+        document.addEventListener('click', function(e) {
+            // Close all friend menus when clicking outside
+            if (!e.target.closest('.friend-menu')) {
+                document.querySelectorAll('.friend-menu-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+
+            // Toggle friend menu
+            if (e.target.closest('.friend-menu-btn')) {
+                const menuBtn = e.target.closest('.friend-menu-btn');
+                const dropdown = menuBtn.parentElement.querySelector('.friend-menu-dropdown');
+
+                // Close other menus
+                document.querySelectorAll('.friend-menu-dropdown').forEach(d => {
+                    if (d !== dropdown) d.classList.remove('active');
+                });
+
+                // Toggle current menu
+                dropdown.classList.toggle('active');
+            }
+        });
+
+        // Friend sorting functionality
+        document.querySelector('.sort-select')?.addEventListener('change', function(e) {
+            const sortBy = e.target.value;
+            const friendsList = document.getElementById('friendsList');
+            const friendItems = Array.from(document.querySelectorAll('.friend-item'));
+
+            friendItems.sort((a, b) => {
+                const nameA = a.querySelector('.friend-details h4').textContent.toLowerCase();
+                const nameB = b.querySelector('.friend-details h4').textContent.toLowerCase();
+
+                switch(sortBy) {
+                    case 'name':
+                        return nameA.localeCompare(nameB);
+                    case 'online':
+                        const statusA = a.querySelector('.friend-status').textContent.includes('Online') ? 1 : 0;
+                        const statusB = b.querySelector('.friend-status').textContent.includes('Online') ? 1 : 0;
+                        return statusB - statusA; // Online first
+                    case 'recent':
+                    default:
+                        return 0; // Keep original order
+                }
+            });
+
+            // Re-append sorted items
+            friendItems.forEach(item => friendsList.appendChild(item));
+        });
+
+        // View toggle functionality
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // Could implement grid/list view switching here
+            });
+        });
+
+        // Friend request filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+
+                // Update active filter button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Show/hide request sections
+                const receivedSection = document.querySelector('.received-requests');
+                const sentSection = document.querySelector('.sent-requests');
+
+                if (filter === 'received') {
+                    receivedSection.style.display = 'block';
+                    sentSection.style.display = 'none';
+                } else if (filter === 'sent') {
+                    receivedSection.style.display = 'none';
+                    sentSection.style.display = 'block';
+                } else {
+                    receivedSection.style.display = 'block';
+                    sentSection.style.display = 'block';
+                }
+            });
+        });
+
+        // Friend search functionality
+        document.getElementById('friendSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const friendItems = document.querySelectorAll('.friend-item');
+            const searchResults = document.querySelector('.search-results');
+            const searchSuggestions = document.querySelector('.search-suggestions');
+
+            if (searchTerm.length > 0) {
+                // Show search results
+                searchResults.style.display = 'block';
+                searchSuggestions.style.display = 'none';
+
+                // Filter friends
+                let hasResults = false;
+                friendItems.forEach(item => {
+                    const name = item.querySelector('.friend-details h4').textContent.toLowerCase();
+                    const username = item.querySelector('.friend-details p').textContent.toLowerCase();
+
+                    if (name.includes(searchTerm) || username.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                        hasResults = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show no results message if no matches
+                const noResults = document.querySelector('.no-results');
+                noResults.style.display = hasResults ? 'none' : 'block';
+            } else {
+                // Show suggestions when search is empty
+                searchResults.style.display = 'none';
+                searchSuggestions.style.display = 'block';
+
+                // Show all friends
+                friendItems.forEach(item => {
+                    item.style.display = 'flex';
+                });
+            }
+        });
+
+        // Friend action functions (placeholders for backend integration)
+        function sendFriendRequest(button) {
+            button.innerHTML = '<i class="fas fa-check"></i> Request Sent';
+            button.style.background = '#42b883';
+            button.disabled = true;
+            // Add backend call here
+        }
+
+        function acceptFriendRequest(button) {
+            const requestItem = button.closest('.request-item');
+            requestItem.style.opacity = '0.5';
+            button.innerHTML = '<i class="fas fa-check"></i> Accepted';
+            button.disabled = true;
+            // Add backend call here
+        }
+
+        function declineFriendRequest(button) {
+            const requestItem = button.closest('.request-item');
+            requestItem.remove();
+            // Add backend call here
+        }
+
+        function cancelFriendRequest(button) {
+            const requestItem = button.closest('.request-item');
+            requestItem.remove();
+            // Add backend call here
         }
         
         // Check URL hash and open corresponding tab, or default to "All"
