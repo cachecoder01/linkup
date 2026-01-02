@@ -1,4 +1,5 @@
 <?php
+
     if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== TRUE) {
         header("location: index.html");
         exit();
@@ -54,6 +55,33 @@
     
         $result = $stmt->get_result()->fetch_assoc();
         return (int) $result['total'];
+    }
+
+    function users($user_id) {
+        global $conn;
+            
+        $stmt = $conn->prepare("SELECT * FROM users WHERE id != ?");
+        $stmt ->bind_param("i", $user_id);
+        $stmt ->execute();
+        $result = $stmt -> get_result();
+            
+        if ($result -> num_rows > 0) {
+            $users = array();
+            while ($row = $result->fetch_assoc()) {
+                $users[] = array(
+                    'id' => $row["id"],
+                    'username' => $row["username"],
+                    'profile_img' => $row["profile_img"],
+                    'full_name' =>  $row["full_name"],
+                    'bio' => $row["bio"],
+                    'profession' => $row["profession"],
+                    'location' => $row["location"],
+                    'date' => $row["date"]
+                );
+            }
+        }
+    
+        return $users;       
     }
     
 ?>

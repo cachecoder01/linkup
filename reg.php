@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <p>Registed successfully</p>
                         <a href="login.html" class="btn primary">Login</a>
                     </div>
-                    ';
+                ';
             }else {
                 echo '<div class="form-container">
                         <p>Unable to register</p>

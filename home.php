@@ -428,7 +428,15 @@
                         <h2>Friends</h2>                        
                         <span class="friends-count">
                             <i class="fa fa-users"></i>
-                            0 friends</span>
+                            <?php
+                                $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ?");
+                                $stmt ->bind_param("i", $poster_id);
+                                $stmt ->execute();
+                                       
+                                $result = $stmt->get_result()->fetch_assoc();
+                                $friends = $result['total_friends'];
+                                echo $friends;
+                            ?> friends</span>
                     </div>
                     <div class="friends-search">
                         <div class="search-container">
@@ -459,68 +467,22 @@
                 <div class="friends-content">
                     <!-- ALL FRIENDS TAB -->
                     <div id="allFriends" class="friends-tab-content active">
-                        <div class="friends-toolbar">
-                            <div class="friends-sort">
-                                <select class="sort-select">
-                                    <option value="recent">Recently Added</option>
-                                    <option value="name">Name (A-Z)</option>
-                                    <option value="online">Online First</option>
-                                </select>
-                            </div>
-                            <div class="friends-view-toggle">
-                                <button class="view-btn active" data-view="grid">
-                                    <i class="fas fa-th"></i>
-                                </button>
-                                <button class="view-btn" data-view="list">
-                                    <i class="fas fa-list"></i>
-                                </button>
-                            </div>
-                        </div>
-
                         <div class="friends-list" id="friendsList">
-                            <!-- Friend Item -->
+                            <div class="section-header">
+                                <h3>Friends</h3>
+                            </div>
                             <div class="friend-item">
                                 <div class="friend-info">
                                     <div class="friend-avatar">
                                         <div class="default-avatar-placeholder">
                                             <p>J</p>
                                         </div>
-                                        <div class="online-status online"></div>
-                                        <div class="friend-badge premium">
-                                            <i class="fas fa-crown"></i>
-                                        </div>
                                     </div>
                                     <div class="friend-details">
                                         <div class="friend-name-row">
                                             <h4>John Doe</h4>
-                                            <div class="friend-menu">
-                                                <button class="friend-menu-btn">
-                                                    <i class="fas fa-ellipsis-h"></i>
-                                                </button>
-                                                <div class="friend-menu-dropdown">
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-user-check"></i> View Profile
-                                                    </a>
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-envelope"></i> Send Message
-                                                    </a>
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-user-times"></i> Unfriend
-                                                    </a>
-                                                    <a href="#" class="menu-item danger">
-                                                        <i class="fas fa-ban"></i> Block
-                                                    </a>
-                                                </div>
-                                            </div>
                                         </div>
                                         <p>@johndoe</p>
-                                        <div class="friend-meta">
-                                            <span class="friend-status">Online</span>
-                                            <span class="friend-location">New York, NY</span>
-                                        </div>
-                                        <div class="friend-mutual">
-                                            <i class="fas fa-users"></i> 5 mutual friends
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="friend-actions">
@@ -529,120 +491,12 @@
                                         <span>Message</span>
                                     </button>
                                     <button class="friend-action-btn call-btn">
-                                        <i class="fas fa-phone"></i>
-                                        <span>Call</span>
+                                        <i class="fas fa-ban"></i>
+                                        <span>Unfriend</span>
                                     </button>
                                 </div>
                             </div>
-
-                            <!-- Friend Item -->
-                            <div class="friend-item">
-                                <div class="friend-info">
-                                    <div class="friend-avatar">
-                                        <div class="default-avatar-placeholder">
-                                            <p>S</p>
-                                        </div>
-                                        <div class="online-status offline"></div>
-                                    </div>
-                                    <div class="friend-details">
-                                        <div class="friend-name-row">
-                                            <h4>Sarah Wilson</h4>
-                                            <div class="friend-menu">
-                                                <button class="friend-menu-btn">
-                                                    <i class="fas fa-ellipsis-h"></i>
-                                                </button>
-                                                <div class="friend-menu-dropdown">
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-user-check"></i> View Profile
-                                                    </a>
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-envelope"></i> Send Message
-                                                    </a>
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-user-times"></i> Unfriend
-                                                    </a>
-                                                    <a href="#" class="menu-item danger">
-                                                        <i class="fas fa-ban"></i> Block
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p>@sarahw</p>
-                                        <div class="friend-meta">
-                                            <span class="friend-status">Last seen 2 hours ago</span>
-                                            <span class="friend-location">Los Angeles, CA</span>
-                                        </div>
-                                        <div class="friend-mutual">
-                                            <i class="fas fa-users"></i> 12 mutual friends
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="friend-actions">
-                                    <button class="friend-action-btn message-btn">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>Message</span>
-                                    </button>
-                                    <button class="friend-action-btn call-btn">
-                                        <i class="fas fa-phone"></i>
-                                        <span>Call</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Friend Item -->
-                            <div class="friend-item">
-                                <div class="friend-info">
-                                    <div class="friend-avatar">
-                                        <div class="default-avatar-placeholder">
-                                            <p>M</p>
-                                        </div>
-                                        <div class="online-status online"></div>
-                                    </div>
-                                    <div class="friend-details">
-                                        <div class="friend-name-row">
-                                            <h4>Mike Johnson</h4>
-                                            <div class="friend-menu">
-                                                <button class="friend-menu-btn">
-                                                    <i class="fas fa-ellipsis-h"></i>
-                                                </button>
-                                                <div class="friend-menu-dropdown">
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-user-check"></i> View Profile
-                                                    </a>
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-envelope"></i> Send Message
-                                                    </a>
-                                                    <a href="#" class="menu-item">
-                                                        <i class="fas fa-user-times"></i> Unfriend
-                                                    </a>
-                                                    <a href="#" class="menu-item danger">
-                                                        <i class="fas fa-ban"></i> Block
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p>@mikej</p>
-                                        <div class="friend-meta">
-                                            <span class="friend-status">Online</span>
-                                            <span class="friend-location">Chicago, IL</span>
-                                        </div>
-                                        <div class="friend-mutual">
-                                            <i class="fas fa-users"></i> 8 mutual friends
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="friend-actions">
-                                    <button class="friend-action-btn message-btn">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>Message</span>
-                                    </button>
-                                    <button class="friend-action-btn call-btn">
-                                        <i class="fas fa-phone"></i>
-                                        <span>Call</span>
-                                    </button>
-                                </div>
-                            </div>
-
+                            
                             <!-- Loading State -->
                             <div class="friends-loading" style="display: none;">
                                 <div class="loading-spinner"></div>
@@ -665,20 +519,11 @@
 
                     <!-- FRIEND REQUESTS TAB -->
                     <div id="friendRequests" class="friends-tab-content">
-                        <div class="requests-toolbar">
-                            <div class="requests-filter">
-                                <button class="filter-btn active" data-filter="all">All</button>
-                                <button class="filter-btn" data-filter="received">Received</button>
-                                <button class="filter-btn" data-filter="sent">Sent</button>
-                            </div>
-                        </div>
-
                         <div class="requests-container">
                             <!-- Received Requests -->
                             <div class="requests-section received-requests">
                                 <div class="section-header">
                                     <h3>Friend Requests</h3>
-                                    <span class="request-count">2</span>
                                 </div>
                                 <div class="requests-list">
                                     <!-- Request Item -->
@@ -709,35 +554,6 @@
                                             </button>
                                         </div>
                                     </div>
-
-                                    <!-- Request Item -->
-                                    <div class="request-item">
-                                        <div class="request-info">
-                                            <div class="request-avatar">
-                                                <div class="default-avatar-placeholder">
-                                                    <p>E</p>
-                                                </div>
-                                            </div>
-                                            <div class="request-details">
-                                                <h4>Emma Davis</h4>
-                                                <p>@emmad</p>
-                                                <div class="request-meta">
-                                                    <span class="mutual-count">5 mutual friends</span>
-                                                    <span class="request-time">1 week ago</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="request-actions">
-                                            <button class="btn-primary accept-btn" onclick="acceptFriendRequest(this)">
-                                                <i class="fas fa-check"></i>
-                                                Accept
-                                            </button>
-                                            <button class="btn-secondary decline-btn" onclick="declineFriendRequest(this)">
-                                                <i class="fas fa-times"></i>
-                                                Decline
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -745,7 +561,6 @@
                             <div class="requests-section sent-requests">
                                 <div class="section-header">
                                     <h3>Sent Requests</h3>
-                                    <span class="request-count">1</span>
                                 </div>
                                 <div class="requests-list">
                                     <!-- Sent Request Item -->
@@ -788,109 +603,52 @@
 
                     <!-- FIND FRIENDS TAB -->
                     <div id="findFriends" class="friends-tab-content">
-                        <div class="find-friends-toolbar">
-                            <div class="search-filters">
-                                <select class="filter-select">
-                                    <option value="all">All People</option>
-                                    <option value="mutual">With Mutual Friends</option>
-                                    <option value="location">Nearby</option>
-                                    <option value="interests">Similar Interests</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="find-friends-container">
                             <!-- Search Suggestions -->
                             <div class="search-suggestions">
                                 <div class="suggestions-header">
                                     <h3>People you may know</h3>
-                                    <p>Based on your mutual friends and activity</p>
                                 </div>
                                 <div class="suggestions-grid">
-                                    <!-- Suggestion Card -->
-                                    <div class="suggestion-card">
-                                        <div class="suggestion-header">
-                                            <div class="suggestion-avatar">
-                                                <div class="default-avatar-placeholder">
-                                                    <p>R</p>
-                                                </div>
-                                                <div class="online-indicator online"></div>
-                                            </div>
-                                            <div class="suggestion-actions">
-                                                <button class="btn-primary add-friend-btn" onclick="sendFriendRequest(this)">
-                                                    <i class="fas fa-user-plus"></i>
-                                                    Add Friend
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="suggestion-details">
-                                            <h4>Robert Brown</h4>
-                                            <p>@robertb</p>
-                                            <div class="suggestion-meta">
-                                                <span class="mutual-friends">8 mutual friends</span>
-                                                <span class="common-interest">Likes photography</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <?php
+                                        $users = users($user_id);
+                                        foreach ($users as $user) {
+                                            $f_id = $user["id"];
+                                            $f_name = $user['full_name'];
+                                            $f_username = $user["username"];
+                                            $f_profile_img = $user["profile_img"];
 
-                                    <!-- Suggestion Card -->
-                                    <div class="suggestion-card">
-                                        <div class="suggestion-header">
-                                            <div class="suggestion-avatar">
-                                                <div class="default-avatar-placeholder">
-                                                    <p>D</p>
-                                                </div>
-                                                <div class="online-indicator online"></div>
-                                            </div>
-                                            <div class="suggestion-actions">
-                                                <button class="btn-primary add-friend-btn" onclick="sendFriendRequest(this)">
-                                                    <i class="fas fa-user-plus"></i>
-                                                    Add Friend
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="suggestion-details">
-                                            <h4>David Lee</h4>
-                                            <p>@davidl</p>
-                                            <div class="suggestion-meta">
-                                                <span class="mutual-friends">3 mutual friends</span>
-                                                <span class="common-interest">From San Francisco</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            $f_p_avatar = substr($f_username, 0, 1);
 
-                                    <!-- Suggestion Card -->
-                                    <div class="suggestion-card">
-                                        <div class="suggestion-header">
-                                            <div class="suggestion-avatar">
-                                                <div class="default-avatar-placeholder">
-                                                    <p>C</p>
+                                            echo '<div class="suggestion-card">
+                                                    <a href="profile_view.php?id='.$f_id.'" class="suggestion-header">
+                                                        <div class="suggestion-avatar">
+                                                            <div class="default-avatar-placeholder">';
+                                                                if (empty($f_profile_img)) {
+                                                                    echo '<p>'.strtoupper($f_p_avatar).'</p>';
+                                                                }else {
+                                                                    echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
+                                                                }
+                                                        echo '</div>
+                                                        </div>
+                                                        <div class="suggestion-details">
+                                                            <h4>'.$f_name.'</h4>
+                                                            <p>@'.$f_username.'</p>
+                                                        </div>
+                                                    </a>
+                                                    <div class="suggestion-actions">
+                                                        <form method="POST" action="follow.php">
+                                                            <input type="hidden" name="id" value="'.$f_id.'">
+                                                            <input type="hidden" name="action" value="follow">
+                                                            <button type="submit" class="btn-primary add-friend-btn">
+                                                                <i class="fas fa-user-plus"></i>Connect
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </div>
-                                                <div class="online-indicator offline"></div>
-                                            </div>
-                                            <div class="suggestion-actions">
-                                                <button class="btn-primary add-friend-btn" onclick="sendFriendRequest(this)">
-                                                    <i class="fas fa-user-plus"></i>
-                                                    Add Friend
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="suggestion-details">
-                                            <h4>Carol Martinez</h4>
-                                            <p>@carolm</p>
-                                            <div class="suggestion-meta">
-                                                <span class="mutual-friends">15 mutual friends</span>
-                                                <span class="common-interest">Loves hiking</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="load-more-container">
-                                    <button class="btn-secondary load-more-btn">
-                                        <i class="fas fa-plus"></i>
-                                        Load More Suggestions
-                                    </button>
+                                            ';
+                                        }
+                                    ?>
                                 </div>
                             </div>
 
@@ -941,23 +699,29 @@
                 <div class="stat">
                     <span class="stat-number" id="postsCount">
                         <?php
-                            $stmt = $conn->prepare("SELECT * FROM posts WHERE user_id = ?");
+                            $stmt = $conn->prepare("SELECT count(id) AS total_posts FROM posts WHERE user_id = ?");
                             $stmt ->bind_param("i", $user_id);
                             $stmt ->execute();
                                        
-                            $result = $stmt -> get_result();
-                            $count = $result -> num_rows;
-                            if ($count > 0) {
-                                echo $count;
-                            }else {
-                                echo '0';
-                            }
+                            $result = $stmt->get_result()->fetch_assoc();
+                            $posts_count = $result['total_posts'];
+                            echo $posts_count;
                         ?>
                     </span>
                     <span class="stat-label">Posts</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number">0</span>
+                    <span class="stat-number">
+                    <?php
+                        $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ?");
+                        $stmt ->bind_param("i", $user_id);
+                        $stmt ->execute();
+                                       
+                        $result = $stmt->get_result()->fetch_assoc();
+                        $friends = $result['total_friends'];
+                        echo $friends;
+                    ?>
+                    </span>
                     <span class="stat-label">Friends</span>
                 </div>
             </div>
@@ -970,68 +734,46 @@
                 <p>Add new friends</p>
             </div>
             <div class="suggestions-list">
-                <!-- User Suggestion 1 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>A</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Alex Johnson</h5>
-                            <p>5 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
+                <?php
+                    $limit = 3;
+                    $count = 0;
+                    $users = users($user_id);
+                    foreach ($users as $user) {
+                        if ($count >= $limit) {
+                            break;
+                        }
+                        $f_id = $user["id"];
+                        $f_name = $user['full_name'];
+                        $f_username = $user["username"];
+                        $f_profile_img = $user["profile_img"];
 
-                <!-- User Suggestion 2 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>S</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Sarah Chen</h5>
-                            <p>12 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
-                <!-- User Suggestion 4 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>E</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Emma Wilson</h5>
-                            <p>8 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
+                        $F_p_avatar = substr($f_username, 0, 1);
 
-                <!-- User Suggestion 5 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>J</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>James Rodriguez</h5>
-                            <p>2 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Connect</button>
-                </div>
+                        echo '<div class="suggestion-item">
+                                <a href="profile_view.php?id='.$f_id.'" class="suggestion-info">
+                                    <div class="suggestion-avatar">
+                                        <div class="default-avatar-placeholder">';
+                                            if (empty($f_profile_img)) {
+                                                echo '<p>'.strtoupper($F_p_avatar).'</p>';
+                                            }else {
+                                                echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
+                                            }
+                                    echo '</div>
+                                    </div>
+                                    <div class="suggestion-details">
+                                        <h5>'.ucwords($f_name).'</h5>
+                                        <p>@'.$f_username.'</p>
+                                    </div>
+                                </a>
+                                <form method="POST" action="follow.php">
+                                    <input type="hidden" name="id" value="'.$f_id.'">
+                                    <input type="hidden" name="action" value="follow">
+                                    <button type="submit" class="follow-btn">Connect</button>
+                                </form>
+                            </div>';
+                        $count++;
+                    }
+                ?>
             </div>
             <a href="#" class="see-all">See more</a>
         </div>

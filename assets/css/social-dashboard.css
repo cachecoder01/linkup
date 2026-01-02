@@ -850,12 +850,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 0;
+    padding: 12px 8px;
     border-radius: 8px;
     transition: background-color 0.2s ease;
 }
 .suggestion-item:hover {
     background: #f0f2f5;
+}
+.suggestion-item a {
+    text-decoration: none;
 }
 .suggestion-info {
     display: flex;
@@ -882,7 +885,7 @@ body {
     color: #65676b;
 }
 .follow-btn {
-    padding: 6px 12px;
+    padding: 6px;
     background: #1877f2;
     color: #ffffff;
     border: none;
@@ -1212,7 +1215,9 @@ body {
     flex-direction: column;
     gap: 16px;
 }
-
+.section-header {
+    color: #111;
+}
 .friend-item {
     display: flex;
     align-items: center;
@@ -1221,11 +1226,9 @@ body {
     border-radius: 8px;
     transition: background-color 0.2s ease;
 }
-
 .friend-item:hover {
     background: #f8f9fa;
 }
-
 .friend-info {
     display: flex;
     align-items: center;
@@ -1414,32 +1417,48 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
 }
-
 .suggestion-card {
     background: #f8f9fa;
     border-radius: 8px;
-    padding: 16px;
+    padding: 10px;
     border: 1px solid #dadde1;
     transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px auto;
+    width: 100%;
 }
-
 .suggestion-card:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
-
+.suggestion-card a {
+    text-decoration: none;
+}
 .suggestion-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
 }
-
 .suggestion-avatar .default-avatar-placeholder {
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
 }
-
+.suggestion-details {
+    margin: 10px;
+    align-items: center;
+}
+.suggestion-details h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1c1e21;
+    margin: 0 0 4px 0;
+}
+.suggestion-details p {
+    font-size: 14px;
+    color: #65676b;
+    margin: 0 0 8px 0;
+}
 .add-friend-btn {
     display: flex;
     align-items: center;
@@ -1447,24 +1466,6 @@ body {
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 600;
-}
-
-.suggestion-details h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1c1e21;
-    margin: 0 0 4px 0;
-}
-
-.suggestion-details p {
-    font-size: 14px;
-    color: #65676b;
-    margin: 0 0 8px 0;
-}
-
-.mutual-friends {
-    font-size: 12px;
-    color: #90949c;
 }
 
 /* SEARCH RESULTS */

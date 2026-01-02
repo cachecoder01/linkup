@@ -245,17 +245,13 @@
                                 <div class="stat-detail">
                                     <span class="stat-number-large">
                                         <?php
-                                            $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id = ?");
+                                            $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ?");
                                             $stmt ->bind_param("i", $poster_id);
                                             $stmt ->execute();
                                        
-                                            $result = $stmt -> get_result();
-                                            $count = $result -> num_rows;
-                                            if ($count > 0) {
-                                                echo $count;
-                                            }else {
-                                                echo '0';
-                                            }
+                                            $result = $stmt->get_result()->fetch_assoc();
+                                            $friends = $result['total_friends'];
+                                            echo $friends;
                                         ?>
                                     </span>
                                     <span class="stat-label-large">Friends</span>
@@ -321,85 +317,46 @@
                 <p>Add new friends</p>
             </div>
             <div class="suggestions-list">
-                <!-- User Suggestion 1 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>A</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Alex Johnson</h5>
-                            <p>5 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
+                <?php
+                    $limit = 3;
+                    $count = 0;
+                    $users = users($user_id);
+                    foreach ($users as $user) {
+                        if ($count >= $limit) {
+                            break;
+                        }
+                        $f_id = $user["id"];
+                        $f_name = $user['full_name'];
+                        $f_username = $user["username"];
+                        $f_profile_img = $user["profile_img"];
 
-                <!-- User Suggestion 2 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>S</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Sarah Chen</h5>
-                            <p>12 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
+                        $F_p_avatar = substr($f_username, 0, 1);
 
-                <!-- User Suggestion 3 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>M</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Michael Davis</h5>
-                            <p>3 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
-
-                <!-- User Suggestion 4 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>E</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>Emma Wilson</h5>
-                            <p>8 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Follow</button>
-                </div>
-
-                <!-- User Suggestion 5 -->
-                <div class="suggestion-item">
-                    <div class="suggestion-info">
-                        <div class="suggestion-avatar">
-                            <div class="default-avatar-placeholder">
-                                <p>J</p>
-                            </div>
-                        </div>
-                        <div class="suggestion-details">
-                            <h5>James Rodriguez</h5>
-                            <p>2 mutual friends</p>
-                        </div>
-                    </div>
-                    <button class="follow-btn">Connect</button>
-                </div>
+                        echo '<div class="suggestion-item">
+                                <a href="profile_view.php?id='.$f_id.'" class="suggestion-info">
+                                    <div class="suggestion-avatar">
+                                        <div class="default-avatar-placeholder">';
+                                            if (empty($f_profile_img)) {
+                                                echo '<p>'.strtoupper($F_p_avatar).'</p>';
+                                            }else {
+                                                echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
+                                            }
+                                    echo '</div>
+                                    </div>
+                                    <div class="suggestion-details">
+                                        <h5>'.ucwords($f_name).'</h5>
+                                        <p>@'.$f_username.'</p>
+                                    </div>
+                                </a>
+                                <form method="POST" action="follow.php">
+                                    <input type="hidden" name="id" value="'.$f_id.'">
+                                    <input type="hidden" name="action" value="follow">
+                                    <button type="submit" class="follow-btn">Connect</button>
+                                </form>
+                            </div>';
+                        $count++;
+                    }
+                ?>
             </div>
             <a href="#" class="see-all">See more</a>
         </div>
