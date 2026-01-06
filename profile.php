@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>LinkUp | Sign Up</title>
+    <title>LinkUp | Profile</title>
 
     <link rel="shortcut icon" href="assets/images/logo.jpeg">
     <link rel="stylesheet" href="assets/css/style.css">

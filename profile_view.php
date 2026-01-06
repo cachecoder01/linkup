@@ -11,11 +11,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>LinkUp | Social Media Platform</title>
+    <title>LinkUp | Profile View</title>
     
     <link rel="shortcut icon" href="assets/images/logo.jpeg">
     <link rel="stylesheet" href="assets/css/social-dashboard.css">
-    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/fonts/css/all.min.css">
     
 </head>
@@ -97,61 +96,10 @@
                     <span>Home</span>
                 </a>
             </nav>
-
-            <div class="sidebar-footer">
-                <div class="create-post-btn">
-                    <i class="fas fa-plus"></i>
-                    <span>Create Post</span>
-                </div>
-            </div>
         </aside>       
 
         <!-- MAIN FEED -->
         <main class="main-feed">
-            <!-- CREATE POST MODAL -->
-            <div class="modal-overlay" id="postModal">
-                <div class="modal-content modal-post">
-                    <div class="modal-header">
-                        <h3>Create Post</h3>
-                        <button class="close-modal" id="closeModal">&times;</button>
-                    </div>
-                    <form action="create_post.php" method="POST" enctype="multipart/form-data">
-                        <div class="modal-body">
-                            <div class="post-content-section">
-                                <textarea name="post_text" maxlength="500" class="post-textarea"
-                                    placeholder="What's on your mind?" required>
-                                </textarea>
-                                <!-- Character Counter -->
-                                <div class="char-counter">
-                                    <span class="char-count">0</span>/500
-                                </div>
-                            </div>
-                            <!-- Image Preview Area -->
-                            <div class="image-preview-container" id="imagePreviewContainer">
-                                <div class="image-preview-placeholder">
-                                    <i class="fas fa-images"></i><span>Add photos to your post</span>
-                                </div>
-                            </div>
-                            <!-- Post Actions -->
-                            <div class="post-actions">
-                                <div class="action-buttons">
-                                    <label for="imageUpload" class="action-btn">
-                                        <i class="fas fa-image"></i> Add Photo
-                                    </label>
-                                    <input type="file" id="imageUpload" name="img" multiple accept="image/*" style="display: none;">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="reset" class="btn-secondary" value="Cancel">
-                            <button type="submit" class="btn-primary">
-                                <i class="fas fa-paper-plane"></i> Post
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <?php
             include 'post.php';
                 $poster_id = $_GET["id"];
@@ -168,7 +116,7 @@
             ?>
 
             <section>
-            <!-- VIEW PROFILE MODAL -->
+            <!-- VIEW PROFILE -->
                 <div class="profile-view">
                     <div class="modal-body">
                         <div class="profile-details">
@@ -185,13 +133,43 @@
                                             ?>
                                         </div>
                                     </div>
-                                    <button class="btn-primary connect">
-                                        <i class="fas fa-plus"></i>
-                                        <span>Connect</span>
-                                    </button>
+                                    <?php
+                                        $stmt = $conn->prepare("SELECT * FROM friends WHERE request='approved' 
+                                            AND (
+                                                (user_id = ? AND friend_id = ?)
+                                            )
+                                        ");
+                                        $stmt->bind_param("ii", $user_id, $poster_id);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        if ($result -> num_rows > 0) {
+                                            echo '<form method="POST" action="follow.php">
+                                                    <input type="hidden" name="id" value="'.$poster_id.'">
+                                                    <input type="hidden" name="action" value="unfriend">
+                                                    <button type="submit" class="btn-primary connect">
+                                                        <i class="fas fa-ban"></i> 
+                                                        <span>Unfriend</span>
+                                                    </button>
+                                                </form>
+                                            ';
+                                        }elseif($poster_id == $user_id) {
+                                            echo null;
+                                        }else {
+                                            echo '<form method="POST" action="follow.php">
+                                                    <input type="hidden" name="id" value="<?= $poster_id ?>">
+                                                    <input type="hidden" name="action" value="follow">
+                                                    <button type="submit" class="btn-primary connect">
+                                                        <i class="fas fa-plus"></i>
+                                                        <span>Connect</span>
+                                                    </button>
+                                                </form>
+                                            ';
+                                        }
+                                    ?>
+                                    
                                 </div>                                
                                 <div class="profile-info-section">
-                                    <div class="profile-details-info">
+                                    <div class="profile-details-info">                                        
                                         <h2><?= $full_name ?></h2>
                                         <p class="profile-username">@<?= $p_username ?></p>
                                         <p class="profile-bio"><?= ucfirst($p_bio) ?></p>
@@ -317,20 +295,21 @@
                 <p>Add new friends</p>
             </div>
             <div class="suggestions-list">
-                <?php
+            <?php
                     $limit = 3;
                     $count = 0;
-                    $users = users($user_id);
-                    foreach ($users as $user) {
-                        if ($count >= $limit) {
-                            break;
-                        }
-                        $f_id = $user["id"];
-                        $f_name = $user['full_name'];
-                        $f_username = $user["username"];
-                        $f_profile_img = $user["profile_img"];
+                    $users = getFindFriends($user_id);
+                    if (!empty($users)) {
+                        foreach ($users as $user) {
+                            if ($count >= $limit) {
+                                break;
+                            }
+                            $f_id = $user["id"];
+                            $f_name = $user['full_name'];
+                            $f_username = $user["username"];
+                            $f_profile_img = $user["profile_img"];
 
-                        $F_p_avatar = substr($f_username, 0, 1);
+                            $F_p_avatar = substr($f_username, 0, 1);
 
                         echo '<div class="suggestion-item">
                                 <a href="profile_view.php?id='.$f_id.'" class="suggestion-info">
@@ -354,7 +333,10 @@
                                     <button type="submit" class="follow-btn">Connect</button>
                                 </form>
                             </div>';
-                        $count++;
+                            $count++;
+                        }
+                    }else {
+                        echo '<p class="no-suggestions">No suggested friends</p>';
                     }
                 ?>
             </div>

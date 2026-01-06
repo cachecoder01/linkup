@@ -15,7 +15,6 @@
     
     <link rel="shortcut icon" href="assets/images/logo.jpeg">
     <link rel="stylesheet" href="assets/css/social-dashboard.css">
-    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/fonts/css/all.min.css">
     
 </head>
@@ -145,7 +144,7 @@
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="nav-item tablink" onclick="openPage('Friends', this, '#e7f3ff', '#1877f2')" data-section="profile">
+                <a href="#" class="nav-item tablink" onclick="openPage('Friends', this, '#e7f3ff', '#1877f2')">
                     <i class="fas fa-users"></i>
                     <span>Friends</span>
                 </a>
@@ -394,7 +393,7 @@
                                             </div>
                                         </div>
                                         <div class="post-body">
-                                            <p>' .$post_text. '</p>';
+                                            <p>' .nl2br($post_text). '</p>';
                                             if (!empty($post_img)) {
                                                 echo '<img src="assets/images/posts/'.$post_img.'" alt="Post image">';
                                             }
@@ -657,7 +656,7 @@
                                                             <form method="POST" action="follow.php">
                                                                 <input type="hidden" name="id" value="'.$f_id.'">
                                                                 <input type="hidden" name="action" value="unfriend">
-                                                                <button class="btn-secondary cancel-btn">
+                                                                <button class="btn-secondary cancel-btn" onclick="return confirm(\'Are you sure you want to cancel this request\')">
                                                                     <i class="fas fa-times"></i>Cancel Request
                                                                 </button>
                                                             </form>
@@ -824,7 +823,7 @@
 
                         echo '<div class="suggestion-item">
                                 <a href="profile_view.php?id='.$f_id.'" class="suggestion-info">
-                                    <div class="suggestion-avatar">
+                        <div class="suggestion-avatar">
                                         <div class="default-avatar-placeholder">';
                                             if (empty($f_profile_img)) {
                                                 echo '<p>'.strtoupper($F_p_avatar).'</p>';
@@ -832,11 +831,11 @@
                                                 echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
                                             }
                                     echo '</div>
-                                    </div>
-                                    <div class="suggestion-details">
+                        </div>
+                        <div class="suggestion-details">
                                         <h5>'.ucwords($f_name).'</h5>
                                         <p>@'.$f_username.'</p>
-                                    </div>
+                        </div>
                                 </a>
                                 <form method="POST" action="follow.php">
                                     <input type="hidden" name="id" value="'.$f_id.'">
@@ -925,7 +924,7 @@
             });
         }
         // Get the element with id="defaultOpen" and click on it
-		document.getElementById("defaultOpen").click();
+            document.getElementById("defaultOpen").click();
 
 
         // Friends tabs functionality
@@ -951,30 +950,6 @@
             elmnt.classList.add("active");
         }
 
-        // Enhanced friend menu functionality
-        document.addEventListener('click', function(e) {
-            // Close all friend menus when clicking outside
-            if (!e.target.closest('.friend-menu')) {
-                document.querySelectorAll('.friend-menu-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('active');
-                });
-            }
-
-            // Toggle friend menu
-            if (e.target.closest('.friend-menu-btn')) {
-                const menuBtn = e.target.closest('.friend-menu-btn');
-                const dropdown = menuBtn.parentElement.querySelector('.friend-menu-dropdown');
-
-                // Close other menus
-                document.querySelectorAll('.friend-menu-dropdown').forEach(d => {
-                    if (d !== dropdown) d.classList.remove('active');
-                });
-
-                // Toggle current menu
-                dropdown.classList.toggle('active');
-            }
-        });
-        
     </script>
 
 </body>
