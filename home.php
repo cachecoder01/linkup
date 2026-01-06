@@ -290,21 +290,14 @@
                                 </div>
                                 <div class="stat-detail">
                                     <span class="stat-number-large">
-                                        <?php
-                                            /*$user_id = $_SESSION['user_id'];
-                                            echo friendsCount($user_id);*/
-                                        
-                                            $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id = ?");
+                                        <?php                                        
+                                            $stmt = $conn->prepare("SELECT COUNT(*) AS total_friends FROM friends WHERE user_id = ? AND request='approved'");
                                             $stmt ->bind_param("i", $user_id);
                                             $stmt ->execute();
                                        
-                                            $result = $stmt -> get_result();
-                                            $count = $result -> num_rows;
-                                            if ($count > 0) {
-                                                echo $count;
-                                            }else {
-                                                echo '0';
-                                            }
+                                            $result = $stmt -> get_result()->fetch_assoc();
+                                            $friends = $result['total_friends'];
+                                            echo $friends
                                         ?>
                                     </span>
                                     <span class="stat-label-large">Friends</span>
@@ -373,7 +366,7 @@
                                 $post_img = $post["post_img"];
                                 $post_date = $post["date"];
 
-                                $profile = postProfile($poster_id);
+                                $profile = getProfileInfo($poster_id);
                                 $full_name = $profile['full_name'];
                                 $p_username = $profile['username'];
                                 $p_profile = $profile['profile_img'];
@@ -427,22 +420,17 @@
                     <div class="friends-title">
                         <h2>Friends</h2>                        
                         <span class="friends-count">
-                            <i class="fa fa-users"></i>
+                            <i class="fa fa-users"></i> 
                             <?php
-                                $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ?");
-                                $stmt ->bind_param("i", $poster_id);
+                                $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ? AND request = 'approved'");
+                                $stmt ->bind_param("i", $user_id);
                                 $stmt ->execute();
-                                       
+
                                 $result = $stmt->get_result()->fetch_assoc();
                                 $friends = $result['total_friends'];
-                                echo $friends;
-                            ?> friends</span>
-                    </div>
-                    <div class="friends-search">
-                        <div class="search-container">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" class="search-input" placeholder="Search friends..." id="friendSearch">
-                        </div>
+                                echo "<p> $friends </p>";
+                            ?> friends
+                        </span>
                     </div>
                 </div>
 
@@ -455,7 +443,17 @@
                     <button class="friends-tab" onclick="openFriendsTab('friendRequests', this)">
                         <i class="fas fa-user-plus"></i>
                         <span>Friend Requests</span>
-                        <span class="tab-badge">0</span>
+                        <span class="tab-badge">
+                            <?php
+                                $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE friend_id = ? AND request = 'pending'");
+                                $stmt ->bind_param("i", $user_id);
+                                $stmt ->execute();
+
+                                $result = $stmt->get_result()->fetch_assoc();
+                                $friends = $result['total_friends'];
+                                echo $friends;
+                            ?>
+                        </span>
                     </button>
                     <button class="friends-tab" onclick="openFriendsTab('findFriends', this)">
                         <i class="fas fa-search"></i>
@@ -471,49 +469,69 @@
                             <div class="section-header">
                                 <h3>Friends</h3>
                             </div>
-                            <div class="friend-item">
-                                <div class="friend-info">
-                                    <div class="friend-avatar">
-                                        <div class="default-avatar-placeholder">
-                                            <p>J</p>
-                                        </div>
-                                    </div>
-                                    <div class="friend-details">
-                                        <div class="friend-name-row">
-                                            <h4>John Doe</h4>
-                                        </div>
-                                        <p>@johndoe</p>
-                                    </div>
-                                </div>
-                                <div class="friend-actions">
-                                    <button class="friend-action-btn message-btn">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>Message</span>
-                                    </button>
-                                    <button class="friend-action-btn call-btn">
-                                        <i class="fas fa-ban"></i>
-                                        <span>Unfriend</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Loading State -->
-                            <div class="friends-loading" style="display: none;">
-                                <div class="loading-spinner"></div>
-                                <p>Loading friends...</p>
-                            </div>
+                            <?php
+                                $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id = ? AND request = 'approved'");
+                                $stmt ->bind_param("i", $user_id);
+                                $stmt ->execute();
 
-                            <!-- No Friends Message -->
-                            <div class="no-friends" style="display: none;">
-                                <div class="no-friends-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <h3>No friends yet</h3>
-                                <p>Start connecting with people by sending friend requests or searching for friends.</p>
-                                <button class="btn-primary find-friends-btn" onclick="openFriendsTab('findFriends', document.querySelector('.friends-tab[onclick*=\"findFriends\"]'))">
-                                    Find Friends
-                                </button>
-                            </div>
+                                $result = $stmt->get_result();
+                                if ($result -> num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        $f_id = $row["friend_id"];
+                                        
+                                        $users = getProfileInfo($f_id);
+                                        $f_name = $users['full_name'];
+                                        $f_username = $users["username"];
+                                        $f_profile_img = $users["profile_img"];
+
+                                        $f_p_avatar = substr($f_username, 0, 1);
+
+                                        echo '<div class="friend-item">
+                                                <a href="profile_view.php?id='.$f_id.'" class="friend-info">
+                                                    <div class="friend-avatar">
+                                                        <div class="default-avatar-placeholder">';
+                                                            if (empty($f_profile_img)) {
+                                                                echo '<p>'.strtoupper($f_p_avatar).'</p>';
+                                                            }else {
+                                                                echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
+                                                            }
+                                                    echo '</div>
+                                                    </div>
+                                                    <div class="friend-details">
+                                                        <div class="friend-name-row">
+                                                            <h4>'.$f_name.'</h4>
+                                                        </div>
+                                                        <p>@'.$f_username.'</p>
+                                                    </div>
+                                                </a>
+                                                <div class="friend-actions">
+                                                    <button class="friend-action-btn message-btn">
+                                                        <i class="fas fa-envelope"></i>
+                                                        <span>Message</span>
+                                                    </button>
+                                                    <form method="POST" action="follow.php">
+                                                        <input type="hidden" name="id" value="'.$f_id.'">
+                                                        <input type="hidden" name="action" value="unfriend">
+                                                        <button class="friend-action-btn call-btn" onclick="return confirm(\'Are you sure you want to disconnect with this user?\')">
+                                                            <i class="fas fa-ban"></i>             
+                                                            <span>Unfriend</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        ';
+                                    }
+                                }else {
+                                    echo '<div class="no-friends">
+                                            <div class="no-friends-icon">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <h3>No friends yet</h3>
+                                            <p>Start connecting with people by sending friend requests.</p>
+                                        </div>
+                                    ';
+                                }
+                            ?>
                         </div>
                     </div>
 
@@ -526,34 +544,70 @@
                                     <h3>Friend Requests</h3>
                                 </div>
                                 <div class="requests-list">
-                                    <!-- Request Item -->
-                                    <div class="request-item">
-                                        <div class="request-info">
-                                            <div class="request-avatar">
-                                                <div class="default-avatar-placeholder">
-                                                    <p>M</p>
-                                                </div>
-                                            </div>
-                                            <div class="request-details">
-                                                <h4>Mike Johnson</h4>
-                                                <p>@mikej</p>
-                                                <div class="request-meta">
-                                                    <span class="mutual-count">2 mutual friends</span>
-                                                    <span class="request-time">2 days ago</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="request-actions">
-                                            <button class="btn-primary accept-btn" onclick="acceptFriendRequest(this)">
-                                                <i class="fas fa-check"></i>
-                                                Accept
-                                            </button>
-                                            <button class="btn-secondary decline-btn" onclick="declineFriendRequest(this)">
-                                                <i class="fas fa-times"></i>
-                                                Decline
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <?php
+                                        $stmt = $conn->prepare("SELECT * FROM friends WHERE friend_id = ? AND request = 'pending'");
+                                        $stmt ->bind_param("i", $user_id);
+                                        $stmt ->execute();
+                                        $result = $stmt->get_result();
+                                        if ($result -> num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                $f_id = $row["user_id"];
+                                                $r_date = $row["date"];
+
+                                                $f_details = getProfileInfo($f_id);
+                                                $f_profile_img = $f_details["profile_img"];
+                                                $f_username = $f_details["username"];
+
+                                                $f_p_avatar = substr($f_username, 0, 1);
+                                                
+                                               echo '<div class="request-item">
+                                                        <a href="profile_view.php?id='.$f_id.'" class="request-info">
+                                                            <div class="request-avatar">
+                                                                <div class="default-avatar-placeholder">';
+                                                                    if (empty($f_profile_img)) {
+                                                                        echo '<p>'.strtoupper($f_p_avatar).'</p>';
+                                                                    }else {
+                                                                        echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
+                                                                    }
+                                                            echo '</div>
+                                                            </div>
+                                                            <div class="request-details">
+                                                                <h4>'.$f_details["full_name"].'</h4>
+                                                                <p>@'.$f_username.'</p>
+                                                                <div class="request-meta">
+                                                                    <span class="request-time">'.$r_date.'</span>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                        <div class="request-actions">
+                                                            <form method="POST" action="follow.php">
+                                                                <input type="hidden" name="id" value="'.$f_id.'">
+                                                                <input type="hidden" name="action" value="accept">
+                                                                <button type="submit" class="btn-primary accept-btn">
+                                                                    <i class="fas fa-check"></i>Accept
+                                                                </button>
+                                                            </form>
+                                                            <form method="POST" action="follow.php">
+                                                                <input type="hidden" name="id" value="'.$f_id.'">
+                                                                <input type="hidden" name="action" value="unfriend">
+                                                                <button type="submit" class="btn-secondary decline-btn" onclick="return confirm(\'Are you sure you want to decline this user request?\')">
+                                                                    <i class="fas fa-times"></i>Decline
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                ';
+                                            }
+                                        }else {
+                                            echo '<div class="no-requests">
+                                                    <div class="no-requests-icon">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </div>
+                                                    <h3>No friend requests</h3>
+                                                    <p>When someone sends you a friend request, it will appear here.</p>
+                                                </div>';
+                                        }
+                                    ?>
                                 </div>
                             </div>
 
@@ -563,41 +617,66 @@
                                     <h3>Sent Requests</h3>
                                 </div>
                                 <div class="requests-list">
-                                    <!-- Sent Request Item -->
-                                    <div class="request-item sent">
-                                        <div class="request-info">
-                                            <div class="request-avatar">
-                                                <div class="default-avatar-placeholder">
-                                                    <p>A</p>
-                                                </div>
-                                            </div>
-                                            <div class="request-details">
-                                                <h4>Alex Chen</h4>
-                                                <p>@alexchen</p>
-                                                <div class="request-meta">
-                                                    <span class="request-status">Pending</span>
-                                                    <span class="request-time">3 days ago</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="request-actions">
-                                            <button class="btn-secondary cancel-btn" onclick="cancelFriendRequest(this)">
-                                                <i class="fas fa-times"></i>
-                                                Cancel Request
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                    <?php
+                                        $stmt = $conn->prepare("SELECT * FROM friends WHERE user_id = ? AND request = 'pending'");
+                                        $stmt ->bind_param("i", $user_id);
+                                        $stmt ->execute();
+                                        $result = $stmt->get_result();
+                                        if ($result -> num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                $f_id = $row["friend_id"];
+                                                $r_date = $row["date"];
 
-                            <!-- No Requests Message -->
-                            <div class="no-requests" style="display: none;">
-                                <div class="no-requests-icon">
-                                    <i class="fas fa-user-plus"></i>
+                                                $f_details = getProfileInfo($f_id);
+                                                $f_profile_img = $f_details["profile_img"];
+                                                $f_username = $f_details["username"];
+
+                                                $f_p_avatar = substr($f_username, 0, 1);
+                                                
+                                               echo '<div class="request-item sent">
+                                                        <div class="request-info">
+                                                            <div class="request-avatar">
+                                                                <div class="default-avatar-placeholder">';
+                                                                    if (empty($f_profile_img)) {
+                                                                        echo '<p>'.strtoupper($f_p_avatar).'</p>';
+                                                                    }else {
+                                                                        echo '<img src="assets/images/profiles/'.$f_profile_img.'">';
+                                                                    }
+                                                            echo '</div>
+                                                            </div>
+                                                            <div class="request-details">
+                                                                <h4>'.$f_details["full_name"].'</h4>
+                                                                <p>@'.$f_username.'</p>
+                                                                <div class="request-meta">
+                                                                    <span class="request-status">Pending</span>
+                                                                    <span class="request-time">'.$r_date.'</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="request-actions">
+                                                            <form method="POST" action="follow.php">
+                                                                <input type="hidden" name="id" value="'.$f_id.'">
+                                                                <input type="hidden" name="action" value="unfriend">
+                                                                <button class="btn-secondary cancel-btn">
+                                                                    <i class="fas fa-times"></i>Cancel Request
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                ';
+                                            }
+                                        }else {
+                                            echo '<div class="no-requests">
+                                                    <div class="no-requests-icon">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </div>
+                                                    <h3>No sent requests</h3>
+                                                    <p>Your sent request, it will appear here.</p>
+                                                </div>';
+                                        }
+                                    ?>                                    
                                 </div>
-                                <h3>No friend requests</h3>
-                                <p>When someone sends you a friend request, it will appear here.</p>
-                            </div>
+                            </div>                            
                         </div>
                     </div>
 
@@ -611,14 +690,15 @@
                                 </div>
                                 <div class="suggestions-grid">
                                     <?php
-                                        $users = users($user_id);
-                                        foreach ($users as $user) {
-                                            $f_id = $user["id"];
-                                            $f_name = $user['full_name'];
-                                            $f_username = $user["username"];
-                                            $f_profile_img = $user["profile_img"];
+                                        $users = getFindFriends($user_id);
+                                        if (!empty($users)) {
+                                            foreach ($users as $user) {
+                                                $f_id = $user["id"];
+                                                $f_name = $user['full_name'];
+                                                $f_username = $user["username"];
+                                                $f_profile_img = $user["profile_img"];
 
-                                            $f_p_avatar = substr($f_username, 0, 1);
+                                                $f_p_avatar = substr($f_username, 0, 1);
 
                                             echo '<div class="suggestion-card">
                                                     <a href="profile_view.php?id='.$f_id.'" class="suggestion-header">
@@ -647,26 +727,17 @@
                                                     </div>
                                                 </div>
                                             ';
+                                            }
+                                        }else {
+                                            echo '<div class="no-requests">
+                                                    <div class="no-requests-icon">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </div>
+                                                    <h3>No suggested friends</h3>
+                                                    <p>suggested friends, will appear here.</p>
+                                                </div>';
                                         }
                                     ?>
-                                </div>
-                            </div>
-
-                            <!-- Search Results (shown when searching) -->
-                            <div class="search-results" style="display: none;">
-                                <div class="results-header">
-                                    <h3>Search Results</h3>
-                                    <span class="results-count">0 results</span>
-                                </div>
-                                <div class="results-list">
-                                    <!-- Results will be populated by JavaScript -->
-                                </div>
-                                <div class="no-results" style="display: none;">
-                                    <div class="no-results-icon">
-                                        <i class="fas fa-search"></i>
-                                    </div>
-                                    <h4>No results found</h4>
-                                    <p>Try searching with a different name or username.</p>
                                 </div>
                             </div>
                         </div>
@@ -713,7 +784,8 @@
                 <div class="stat">
                     <span class="stat-number">
                     <?php
-                        $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ?");
+                        $user_id = $_SESSION['user_id'];
+                        $stmt = $conn->prepare("SELECT count(*) AS total_friends FROM friends WHERE user_id = ? AND request = 'approved'");
                         $stmt ->bind_param("i", $user_id);
                         $stmt ->execute();
                                        
@@ -737,17 +809,18 @@
                 <?php
                     $limit = 3;
                     $count = 0;
-                    $users = users($user_id);
-                    foreach ($users as $user) {
-                        if ($count >= $limit) {
-                            break;
-                        }
-                        $f_id = $user["id"];
-                        $f_name = $user['full_name'];
-                        $f_username = $user["username"];
-                        $f_profile_img = $user["profile_img"];
+                    $users = getFindFriends($user_id);
+                    if (!empty($users)) {
+                        foreach ($users as $user) {
+                            if ($count >= $limit) {
+                                break;
+                            }
+                            $f_id = $user["id"];
+                            $f_name = $user['full_name'];
+                            $f_username = $user["username"];
+                            $f_profile_img = $user["profile_img"];
 
-                        $F_p_avatar = substr($f_username, 0, 1);
+                            $F_p_avatar = substr($f_username, 0, 1);
 
                         echo '<div class="suggestion-item">
                                 <a href="profile_view.php?id='.$f_id.'" class="suggestion-info">
@@ -771,11 +844,14 @@
                                     <button type="submit" class="follow-btn">Connect</button>
                                 </form>
                             </div>';
-                        $count++;
+                            $count++;
+                        }
+                    }else {
+                        echo '<p class="no-suggestions">No suggested friends</p>';
                     }
                 ?>
             </div>
-            <a href="#" class="see-all">See more</a>
+            <a href="home.php#Friends" class="see-all">See more</a>
         </div>
 
         <!-- TRENDING TOPICS -->
@@ -801,9 +877,8 @@
 
     </aside>
 
-</div>
-
     <script src="assets/js/social-dashboard.js"></script>
+    
     <script>
         function openPage(pageName, elmnt, backgroundColor, textColor) {
             var i, tabcontent, tablinks;
@@ -827,7 +902,31 @@
             // Apply active background + text color
             elmnt.style.backgroundColor = backgroundColor;
             elmnt.style.color = textColor;
+
+            // Open correct tab from URL hash on load
+            window.addEventListener("load", function () {
+            let hash = window.location.hash.replace("#", "");
+
+            if (hash && document.getElementById(hash)) {
+            // Find the tab button that opens this section
+            let btn = document.querySelector(
+                '.tablink[onclick*="' + hash + '"]'
+            );
+
+            // Get colors from data attributes (recommended)
+            let bg = btn ? btn.dataset.bg : "";
+            let text = btn ? btn.dataset.text : "";
+
+            openPage(hash, btn, bg, text);
+            } else {
+                // Default tab
+                document.getElementById("defaultOpen").click();
+            }
+            });
         }
+        // Get the element with id="defaultOpen" and click on it
+		document.getElementById("defaultOpen").click();
+
 
         // Friends tabs functionality
         function openFriendsTab(tabName, elmnt) {
@@ -875,152 +974,7 @@
                 dropdown.classList.toggle('active');
             }
         });
-
-        // Friend sorting functionality
-        document.querySelector('.sort-select')?.addEventListener('change', function(e) {
-            const sortBy = e.target.value;
-            const friendsList = document.getElementById('friendsList');
-            const friendItems = Array.from(document.querySelectorAll('.friend-item'));
-
-            friendItems.sort((a, b) => {
-                const nameA = a.querySelector('.friend-details h4').textContent.toLowerCase();
-                const nameB = b.querySelector('.friend-details h4').textContent.toLowerCase();
-
-                switch(sortBy) {
-                    case 'name':
-                        return nameA.localeCompare(nameB);
-                    case 'online':
-                        const statusA = a.querySelector('.friend-status').textContent.includes('Online') ? 1 : 0;
-                        const statusB = b.querySelector('.friend-status').textContent.includes('Online') ? 1 : 0;
-                        return statusB - statusA; // Online first
-                    case 'recent':
-                    default:
-                        return 0; // Keep original order
-                }
-            });
-
-            // Re-append sorted items
-            friendItems.forEach(item => friendsList.appendChild(item));
-        });
-
-        // View toggle functionality
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                // Could implement grid/list view switching here
-            });
-        });
-
-        // Friend request filter functionality
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filter = this.getAttribute('data-filter');
-
-                // Update active filter button
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-
-                // Show/hide request sections
-                const receivedSection = document.querySelector('.received-requests');
-                const sentSection = document.querySelector('.sent-requests');
-
-                if (filter === 'received') {
-                    receivedSection.style.display = 'block';
-                    sentSection.style.display = 'none';
-                } else if (filter === 'sent') {
-                    receivedSection.style.display = 'none';
-                    sentSection.style.display = 'block';
-                } else {
-                    receivedSection.style.display = 'block';
-                    sentSection.style.display = 'block';
-                }
-            });
-        });
-
-        // Friend search functionality
-        document.getElementById('friendSearch').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const friendItems = document.querySelectorAll('.friend-item');
-            const searchResults = document.querySelector('.search-results');
-            const searchSuggestions = document.querySelector('.search-suggestions');
-
-            if (searchTerm.length > 0) {
-                // Show search results
-                searchResults.style.display = 'block';
-                searchSuggestions.style.display = 'none';
-
-                // Filter friends
-                let hasResults = false;
-                friendItems.forEach(item => {
-                    const name = item.querySelector('.friend-details h4').textContent.toLowerCase();
-                    const username = item.querySelector('.friend-details p').textContent.toLowerCase();
-
-                    if (name.includes(searchTerm) || username.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                        hasResults = true;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-
-                // Show no results message if no matches
-                const noResults = document.querySelector('.no-results');
-                noResults.style.display = hasResults ? 'none' : 'block';
-            } else {
-                // Show suggestions when search is empty
-                searchResults.style.display = 'none';
-                searchSuggestions.style.display = 'block';
-
-                // Show all friends
-                friendItems.forEach(item => {
-                    item.style.display = 'flex';
-                });
-            }
-        });
-
-        // Friend action functions (placeholders for backend integration)
-        function sendFriendRequest(button) {
-            button.innerHTML = '<i class="fas fa-check"></i> Request Sent';
-            button.style.background = '#42b883';
-            button.disabled = true;
-            // Add backend call here
-        }
-
-        function acceptFriendRequest(button) {
-            const requestItem = button.closest('.request-item');
-            requestItem.style.opacity = '0.5';
-            button.innerHTML = '<i class="fas fa-check"></i> Accepted';
-            button.disabled = true;
-            // Add backend call here
-        }
-
-        function declineFriendRequest(button) {
-            const requestItem = button.closest('.request-item');
-            requestItem.remove();
-            // Add backend call here
-        }
-
-        function cancelFriendRequest(button) {
-            const requestItem = button.closest('.request-item');
-            requestItem.remove();
-            // Add backend call here
-        }
         
-        // Check URL hash and open corresponding tab, or default to "All"
-        const urlHash = window.location.hash.substring(1); // Remove the '#'
-        if (urlHash) {
-            const tabButton = document.querySelector(`button[onclick*="${urlHash}"]`);
-            if (tabButton) {
-                tabButton.click();
-            } else {
-                // If hash doesn't match any tab, default to "All"
-                document.getElementById("defaultOpen").click();
-            }
-        } else {
-            // No hash in URL, default to "All"
-            document.getElementById("defaultOpen").click();
-        }
     </script>
 
 </body>

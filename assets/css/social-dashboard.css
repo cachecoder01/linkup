@@ -11,7 +11,7 @@ body {
     background-color: #f0f2f5;
     color: #1c1e21;
     line-height: 1.5;
-    overflow-x: hidden;
+    overflow-x: scroll;
 }
 
 /* ======================
@@ -846,6 +846,11 @@ body {
     flex-direction: column;
     gap: 12px;
 }
+.no-suggestions {
+    color: #65676b;
+    text-align: center;
+    padding: 5px;
+}
 .suggestion-item {
     display: flex;
     align-items: center;
@@ -1087,55 +1092,24 @@ body {
     border: 1px solid #dadde1;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
+.friends-title {
+    display: flex;
+}
 .friends-title h2 {
     font-size: 24px;
     font-weight: 700;
     color: #1c1e21;
     margin: 0;
 }
-
 .friends-count {
     font-size: 14px;
     color: #65676b;
     margin-left: 8px;
+    display: flex;
+    align-items: center;
 }
-
-.friends-search {
-    flex: 1;
-    max-width: 300px;
-    margin-left: 20px;
-}
-
-.search-container {
-    position: relative;
-    width: 100%;
-}
-
-.search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #65676b;
-    font-size: 14px;
-}
-
-.search-input {
-    width: 100%;
-    padding: 10px 12px 10px 36px;
-    border: 1px solid #dadde1;
-    border-radius: 20px;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.2s ease;
-    background: #f0f2f5;
-}
-
-.search-input:focus {
-    background: #ffffff;
-    border-color: #1877f2;
-    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+.friends-count p {
+    padding: 0 5px 0 10px;
 }
 
 /* FRIENDS TABS */
@@ -1225,6 +1199,9 @@ body {
     padding: 16px;
     border-radius: 8px;
     transition: background-color 0.2s ease;
+}
+.friend-item a {
+    text-decoration: none;
 }
 .friend-item:hover {
     background: #f8f9fa;
@@ -1323,20 +1300,20 @@ body {
     flex-direction: column;
     gap: 32px;
 }
-
 .requests-section h3 {
     font-size: 18px;
     font-weight: 600;
     color: #1c1e21;
     margin: 0 0 16px 0;
 }
-
 .requests-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
-
+.requests-list a {
+    text-decoration: none;
+}
 .request-item {
     display: flex;
     align-items: center;
@@ -1345,41 +1322,33 @@ body {
     border-radius: 8px;
     background: #f8f9fa;
 }
-
-.request-item.sent {
-    background: #ffffff;
-    border: 1px solid #dadde1;
-}
-
 .request-info {
     display: flex;
     align-items: center;
     gap: 12px;
 }
-
 .request-avatar .default-avatar-placeholder {
-    width: 48px;
-    height: 48px;
+    width: 65px;
+    height: 65px;
 }
-
 .request-details h4 {
     font-size: 16px;
     font-weight: 600;
     color: #1c1e21;
     margin: 0 0 4px 0;
 }
-
 .request-details p {
     font-size: 14px;
     color: #65676b;
     margin: 0 0 4px 0;
 }
-
+.request-meta span {
+    color: #90949c;
+}
 .request-time {
     font-size: 12px;
     color: #90949c;
 }
-
 .request-actions {
     display: flex;
     gap: 8px;
@@ -1444,7 +1413,7 @@ body {
     width: 60px;
     height: 60px;
 }
-.suggestion-details {
+.friends-content .suggestion-details {
     margin: 10px;
     align-items: center;
 }

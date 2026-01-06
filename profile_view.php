@@ -155,7 +155,7 @@
             <?php
             include 'post.php';
                 $poster_id = $_GET["id"];
-                $profile = postProfile($poster_id);
+                $profile = getProfileInfo($poster_id);
                 $full_name = $profile['full_name'];
                 $p_username = $profile['username'];
                 $p_profile = $profile['profile_img'];

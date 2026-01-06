@@ -1,5 +1,4 @@
 <?php
-
     if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== TRUE) {
         header("location: index.html");
         exit();
@@ -31,7 +30,7 @@
         return $posts;
     }
 
-    function postProfile($poster_id) {
+    function getProfileInfo($poster_id) {
         global $conn;
             
             $stmt = $conn->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
@@ -46,7 +45,7 @@
        
     }
 
-    function friendsCount($user_id) {
+    /*function friendsCount($user_id) {
         global $conn;
     
         $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM friends WHERE user_id = ?");
@@ -55,9 +54,9 @@
     
         $result = $stmt->get_result()->fetch_assoc();
         return (int) $result['total'];
-    }
+    }*/
 
-    function users($user_id) {
+    /*function users($user_id) {
         global $conn;
             
         $stmt = $conn->prepare("SELECT * FROM users WHERE id != ?");
@@ -82,6 +81,48 @@
         }
     
         return $users;       
+    }*/
+
+    function getFindFriends($user_id) {
+        global $conn;
+
+        $stmt = $conn->prepare("
+            SELECT * FROM users WHERE id != ? AND id NOT IN (
+                SELECT friend_id FROM friends WHERE user_id = ? 
+                UNION 
+                SELECT user_id FROM friends WHERE friend_id = ?
+            )
+            ORDER BY full_name ASC
+        ");
+        $stmt ->bind_param("iii", $user_id, $user_id, $user_id);
+        $stmt ->execute();
+        $result = $stmt->get_result();
+
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        return $users;
     }
-    
+
+    function getFriends($user_id) {
+        global $conn;
+        $stmt = $conn->prepare("SELECT u.* 
+            FROM users u 
+            JOIN friends f 
+            ON (u.id = f.friend_id AND f.user_id =?)
+            OR (u.id = f.user_id AND f.friend_id =?)
+            WHERE f.request = 'approved'
+            ORDER BY u.full_name ASC
+        ");
+        $stmt ->bind_param("ii", $user_id, $user_id);
+        $stmt ->execute();
+        $result = $stmt->get_result();
+
+        $friends = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        return $friends;
+    }
 ?>
